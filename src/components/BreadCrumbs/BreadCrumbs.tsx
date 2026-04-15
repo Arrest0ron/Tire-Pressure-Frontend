@@ -5,7 +5,6 @@ import { getMockTire } from "../../modules/mock";
 import { ROUTES } from "../../Routes";
 import "./Breadcrumbs.css";
 
-
 type Crumb = { label: string; to?: string };
 
 export default function Breadcrumbs() {
@@ -24,29 +23,37 @@ export default function Breadcrumbs() {
     }
   }, [pathname]);
 
-  // Автоматическая генерация цепочки
+  // ✅ Автоматическая генерация цепочки с правильной иерархией
   const crumbs: Crumb[] = (() => {
-    const isHome = pathname === "/" || pathname === ROUTES.TIRES;
-    if (isHome) return [{ label: "Главная" }];
-
-    const tireMatch = matchPath(ROUTES.TIRE_DETAIL, pathname);
-    if (tireMatch?.params.id) {
-      const title = tireTitle ?? (tireMatch.params.id ? `Шина ${tireMatch.params.id}` : "Шина");
-      return [{ label: "Главная", to: ROUTES.TIRES }, { label: title }];
+    // 1. Главная страница — только "Главная"
+    if (pathname === ROUTES.MAIN || pathname === "/") {
+      return [{ label: "Главная" }];
     }
 
-    const appMatch = matchPath(ROUTES.APPLICATION, pathname);
-    if (appMatch?.params.id) {
+    // 2. Страница списка шин — "Главная / Список шин"
+    if (pathname === ROUTES.TIRES) {
       return [
-        { label: "Главная", to: ROUTES.TIRES },
-        { label: `Заявка №${appMatch.params.id}` },
+        { label: "Главная", to: ROUTES.MAIN },
+        { label: "Список шин" },
       ];
     }
 
-    return [{ label: "Главная", to: ROUTES.TIRES }, { label: "Страница" }];
+    // 3. Детальная страница шины — "Главная / Список шин / Название"
+    const tireMatch = matchPath(ROUTES.TIRE_DETAIL, pathname);
+    if (tireMatch?.params.id) {
+      const title = tireTitle ?? (tireMatch.params.id ? `Шина ${tireMatch.params.id}` : "Шина");
+      return [
+        { label: "Главная", to: ROUTES.MAIN },
+        { label: "Список шин", to: ROUTES.TIRES },
+        { label: title },
+      ];
+    }
+
+    // Fallback для неизвестных путей
+    return [{ label: "Главная", to: ROUTES.MAIN }, { label: "Страница" }];
   })();
 
-return (
+  return (
     <nav className="breadcrumbs" aria-label="Навигационная цепочка">
       <ol className="breadcrumbs__list">
         {crumbs.map((crumb, i) => {

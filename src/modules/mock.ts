@@ -19,7 +19,7 @@ export const TIRES_MOCK: Tire[] = [
     description:
       "Летняя шина с низким сопротивлением качению. Усиленная боковина, отличный дренаж воды, комфортный ход. Подходит для седанов и хэтчбеков.",
     photo: "",
-    video: tire1Video,
+    video: "",
     tire_material_coefficient: 1.2,
     tire_thickness_coefficient: 0.8,
     is_delete: false,
@@ -50,7 +50,7 @@ export const TIRES_MOCK: Tire[] = [
 
 export const MOCK_CART: TirePressureCart = {
   tire_pressure_id: 1,
-  tires_count: 2,
+  tires_count: 0,
 };
 
 export function getMockTire(id: number): Tire | undefined {
@@ -63,43 +63,3 @@ export function filterMockTiresByTitle(title: string): Tire[] {
   if (!t) return [...TIRES_MOCK];
   return TIRES_MOCK.filter((tire) => tire.tire_title.toLowerCase().includes(t));
 }
-
-export async function addTireToMockApplication(
-  tireId: number,
-): Promise<{ ok: true } | { ok: false; message?: string }> {
-  void tireId;
-  await new Promise((r) => setTimeout(r, 200));
-  return { ok: true };
-}
-
-export const MOCK_APPLICATION_DETAIL: TirePressureDetailResponse = {
-  application: {
-    tire_pressure_id: 1,
-    status: "черновик",
-    date_create: new Date().toISOString(),
-    date_formed: null,
-    date_completed: null,
-    creator_id: 1,
-    moderator_id: null,
-    air_temperature: 20,
-    car_weight: 1500,
-  },
-  entries: [
-    {
-      id: 1,
-      tire_pressure_id: 1,
-      tire_id: 2,
-      tire: TIRES_MOCK[1],
-      coating_coefficient: 1.0,
-      pressure: 220.5,
-    },
-    {
-      id: 2,
-      tire_pressure_id: 1,
-      tire_id: 3,
-      tire: TIRES_MOCK[2],
-      coating_coefficient: 0.95,
-      pressure: 245.0,
-    },
-  ],
-};

@@ -1,7 +1,9 @@
 // src/components/TireCard/TireCard.tsx
-import { Link } from "react-router-dom"; // ✅ Добавляем Link для навигации
+import { Link } from "react-router-dom";
 import type { Tire } from "../../modules/tireApi";
-import { resolveMediaUrl, fallbackImageUrl } from "../../modules/tireApi";
+import { resolveMediaUrl } from "../../modules/tireApi";
+// ✅ Импортируем реальное изображение-заглушку из assets
+import defaultTire from "../../assets/default_tire.png";
 import "./TireCard.css";
 
 interface TireCardProps {
@@ -9,13 +11,12 @@ interface TireCardProps {
 }
 
 export default function TireCard({ tire }: TireCardProps) {
-  // Безопасное получение фото
-  const photoUrl = tire.photo ? resolveMediaUrl(tire.photo) : fallbackImageUrl();
+  // ✅ Безопасное получение фото: если есть — резолвим, если нет — берём default_tire.png
+  const photoUrl = tire.photo ? resolveMediaUrl(tire.photo) : defaultTire;
 
   // Заглушка для кнопки (ничего не делает)
   const handleAddToCartStub = (e: React.MouseEvent) => {
-    e.preventDefault(); // ✅ Предотвращаем любые действия по умолчанию
-    // Можно добавить: console.log(`Шина ${tire.tire_id} добавлена (mock)`);
+    e.preventDefault();
   };
 
   return (
@@ -25,8 +26,9 @@ export default function TireCard({ tire }: TireCardProps) {
         <img 
           src={photoUrl} 
           alt={tire.tire_title || "Шина"} 
+          // ✅ Если картинка не загрузилась (404) — подставляем ту же заглушку
           onError={(e) => {
-            (e.target as HTMLImageElement).src = fallbackImageUrl();
+            (e.target as HTMLImageElement).src = defaultTire;
           }}
         />
       </div>
@@ -56,7 +58,7 @@ export default function TireCard({ tire }: TireCardProps) {
           className="tire-btn"
           onClick={handleAddToCartStub}
         >
-          + В расчёт
+          Войдите в аккаунт для расчета
         </button>
       </div>
     </div>

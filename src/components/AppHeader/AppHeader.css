@@ -1,31 +1,47 @@
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fafafa;
-  min-height: 90px;
-  width: 100%;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  padding: 0 20px;
-  box-sizing: border-box;
+/* src/components/AppHeader/AppHeader.css */
+
+.app-header {
+  background: #fafafa !important;
+  border-bottom: 1px solid #e8e8ec !important;
+  padding: 0.5rem 0 !important;
 }
 
-.header-inner {
+/* Обёртка логотипа — не кликабельна */
+.app-header__logo-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.logo img {
+/* Логотип */
+.app-header__logo {
   height: 80px;
   width: auto;
   object-fit: contain;
+  display: block;
+  cursor: default; /* Показываем, что элемент не интерактивный */
+}
+
+/* Ссылки навигации */
+.app-header .nav-link {
+  color: #333 !important;
+  font-weight: 500;
+  margin-left: 1.5rem;
+  transition: color 0.3s;
+}
+
+.app-header .nav-link:hover {
+  color: #ed1c24 !important;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 991px) {
+  .app-header__logo {
+    height: 60px;
+  }
+  
+  .app-header .nav-link {
+    margin-left: 0;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+  }
 }

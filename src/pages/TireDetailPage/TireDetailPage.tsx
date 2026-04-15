@@ -1,8 +1,10 @@
 // src/pages/TireDetailPage/TireDetailPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { addTireToMockApplication, TIRES_MOCK, getMockTire } from "../../modules/mock";
 import { fallbackImageUrl, resolveMediaUrl, type Tire } from "../../modules/tireApi";
+import { getMockTire, TIRES_MOCK} from "../../modules/mock";
+// ✅ Исправленный путь: файл лежит в src/assets/, расширение .png
+import defaultTire from "../../assets/default_tire.png";
 import "./TireDetailPage.css";
 
 export default function TireDetailPage() {
@@ -18,15 +20,23 @@ export default function TireDetailPage() {
       return;
     }
     setMediaError(false);
-    setDescExpanded(false); // Сбрасываем состояние описания при смене шины
+    setDescExpanded(false);
     const tireId = Number(id);
     const resolved = getMockTire(tireId) ?? TIRES_MOCK.find((t) => t.tire_id === tireId) ?? null;
     setTire(resolved);
   }, [id]);
 
-  const videoUrl = useMemo(() => (tire ? resolveMediaUrl(tire.video ?? "") : ""), [tire]);
-  const posterUrl = useMemo(() => (tire ? resolveMediaUrl(tire.photo ?? "") : fallbackImageUrl()), [tire]);
-  const showVideo = Boolean(tire?.video?.trim()) && !mediaError;
+  // URL для видео (если указано в mock)
+  const videoUrl = useMemo(() => (tire?.video ? resolveMediaUrl(tire.video) : ""), [tire]);
+  
+  // ✅ Фоллбек-изображение: приоритет photo шины → если нет, берём default_tire.png
+  const fallbackUrl = useMemo(() => {
+    if (tire?.photo) return resolveMediaUrl(tire.photo);
+    return defaultTire;
+  }, [tire]);
+
+  // Видео показываем только если есть ссылка и нет ошибки загрузки
+  const showVideo = Boolean(videoUrl) && !mediaError;
 
   const handleAdd = async () => {
     if (!tire) return;
@@ -45,6 +55,7 @@ export default function TireDetailPage() {
 
   const toggleDesc = () => setDescExpanded((prev) => !prev);
 
+  // Если id нет или шина не найдена
   if (!id || !tire) {
     return (
       <div className="vibes-page vibes-page--scroll">
@@ -58,7 +69,6 @@ export default function TireDetailPage() {
   return (
     <div className="vibes-page vibes-page--scroll">
       <div className="vibes-viewport">
-        {/* === Медиа-фон (видео или картинка) === */}
         <div className="vibes-media">
           {showVideo ? (
             <video
@@ -68,30 +78,33 @@ export default function TireDetailPage() {
               muted
               loop
               playsInline
-              poster={posterUrl}
+              poster={fallbackUrl}
               onError={() => setMediaError(true)}
             >
               <source src={videoUrl} type="video/mp4" />
+              {/* Резервное изображение для браузеров без поддержки video */}
+              <img src={fallbackUrl} alt={tire.tire_title} />
             </video>
           ) : (
-            <div className="vibes-fallback" style={{ backgroundImage: `url(${posterUrl})` }} />
+            // Если видео нет или произошла ошибка → показываем фоновое изображение
+            <div
+              className="vibes-fallback"
+              style={{ backgroundImage: `url(${fallbackUrl})` }}
+              aria-label={tire.tire_title}
+            />
           )}
           <div className="vibes-overlay" aria-hidden />
         </div>
 
-        {/* === Контент поверх видео === */}
+        {/* Контент поверх медиа */}
         <div className="vibes-content">
           <h1 className="vibes-title">{tire.tire_title}</h1>
 
-
-          {/* Описание + градиент-фейд (CSS sibling selector `~` работает только если они соседи) */}
           <p className={`vibes-description ${descExpanded ? 'expanded' : ''}`}>
             {tire.description ?? ''}
           </p>
           <div className="fade-overlay" />
 
-
-          {/* Блок с коэффициентами */}
           <div className="vibes-manager">
             <span className="vibes-manager__label">Материал</span>
             <span className="vibes-manager__name">{tire.tire_material_coefficient}</span>
@@ -99,7 +112,6 @@ export default function TireDetailPage() {
             <span className="vibes-manager__label">Толщина</span>
             <span className="vibes-manager__name">{tire.tire_thickness_coefficient}</span>
           </div>
-
         </div>
       </div>
     </div>

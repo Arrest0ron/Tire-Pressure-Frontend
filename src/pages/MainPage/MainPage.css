@@ -1,0 +1,45 @@
+/* src/pages/MainPage/MainPage.css */
+.main-page {
+  width: 100%;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.main-page__content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.main-page__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.main-page__description {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+.main-page__btn {
+  display: inline-block;
+  padding: 14px 32px;
+  background: #ed1c24;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.main-page__btn:hover {
+  background: #c7181e;
+  transform: translateY(-2px);
+}
