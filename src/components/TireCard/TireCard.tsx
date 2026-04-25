@@ -2,7 +2,6 @@
 import { Link } from "react-router-dom";
 import type { Tire } from "../../modules/tireApi";
 import { resolveMediaUrl } from "../../modules/tireApi";
-// ✅ Импортируем реальное изображение-заглушку из assets
 import defaultTire from "../../assets/default_tire.png";
 import "./TireCard.css";
 
@@ -21,12 +20,10 @@ export default function TireCard({ tire }: TireCardProps) {
 
   return (
     <div className="tire-card">
-      {/* === ЛЕВАЯ ЧАСТЬ: Картинка === */}
       <div className="tire-left">
         <img 
           src={photoUrl} 
           alt={tire.tire_title || "Шина"} 
-          // ✅ Если картинка не загрузилась (404) — подставляем ту же заглушку
           onError={(e) => {
             (e.target as HTMLImageElement).src = defaultTire;
           }}
@@ -52,7 +49,6 @@ export default function TireCard({ tire }: TireCardProps) {
           <p>{tire.description}</p>
         )}
 
-        {/* ✅ Кнопка-заглушка: "+ В расчёт", никуда не ведёт */}
         <button 
           type="button" 
           className="tire-btn"

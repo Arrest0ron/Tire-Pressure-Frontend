@@ -17,9 +17,7 @@ export default function AppHeader() {
 
         <Navbar.Collapse id="main-navbar">
           <Nav className="ms-auto">
-            <Nav.Link as={Link} to={ROUTES.MAIN}>
-              Главная
-            </Nav.Link>
+
             <Nav.Link as={Link} to={ROUTES.TIRES}>
               Шины
             </Nav.Link>

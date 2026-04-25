@@ -29,7 +29,7 @@ export const TIRES_MOCK: Tire[] = [
     tire_title: "Continental CrossContact LX2 235/65 R17 108H",
     description:
       "Всесезонная шина для кроссоверов. Асимметричный протектор для уверенного сцепления на мокрой дороге и грунте. Повышенная износостойкость.",
-    photo: tire1Photo,
+    photo: "",
     video: tire1Video,
     tire_material_coefficient: 1.5,
     tire_thickness_coefficient: 1.1,
@@ -40,7 +40,7 @@ export const TIRES_MOCK: Tire[] = [
     tire_title: "Bridgestone M840 315/80 R22.5 156/150L",
     description:
       "Грузовая шина для дальних перевозок. Усиленный каркас, стойкость к порезам, оптимизированное пятно контакта для равномерного износа.",
-    photo: tire2Photo,
+    photo: "",
     video: tire2Video,
     tire_material_coefficient: 2.1,
     tire_thickness_coefficient: 1.8,

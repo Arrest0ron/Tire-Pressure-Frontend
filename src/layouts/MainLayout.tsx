@@ -8,34 +8,36 @@ import { getMockTire } from "../modules/mock";
 export default function MainLayout() {
   const { pathname } = useLocation();
 
-  // ✅ Вычисляем крошки здесь (в «умном» контейнере)
+  // ✅ Вычисляем крошки: начинаем с «Шины», без «Главной»
   const crumbs: ICrumb[] = (() => {
+    // Главная страница — показываем только «Шины» как стартовую точку
     if (pathname === ROUTES.MAIN || pathname === "/") {
-      return [{ label: "Главная" }];
+      return [{ label: "Шины", to: ROUTES.TIRES }];
     }
+    
+    // Список шин
     if (pathname === ROUTES.TIRES) {
-      return [
-        { label: "Главная", to: ROUTES.MAIN },
-        { label: "Список шин" },
-      ];
+      return [{ label: "Шины" }];
     }
+    
+    // Детальная страница шины
     const tireMatch = matchPath(ROUTES.TIRE_DETAIL, pathname);
     if (tireMatch?.params.id) {
       const tire = getMockTire(Number(tireMatch.params.id));
       const title = tire?.tire_title ?? `Шина ${tireMatch.params.id}`;
       return [
-        { label: "Главная", to: ROUTES.MAIN },
-        { label: "Список шин", to: ROUTES.TIRES },
+        { label: "Шины", to: ROUTES.TIRES },
         { label: title },
       ];
     }
-    return [{ label: "Главная", to: ROUTES.MAIN }, { label: "Страница" }];
+    
+    // Fallback для других страниц
+    return [{ label: "Шины", to: ROUTES.TIRES }, { label: "Страница" }];
   })();
 
   return (
     <div className="main-layout">
       <AppHeader />
-      {/* ✅ Передаём крошки в «глупый» компонент */}
       <Breadcrumbs crumbs={crumbs} />
       <main className="main-content">
         <Outlet />

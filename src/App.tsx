@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import MainPage from "./pages/MainPage/MainPage";
 import TiresPage from "./pages/TiresPage/TiresPage";
 import TireDetailPage from "./pages/TireDetailPage/TireDetailPage";
 import { ROUTES } from "./Routes";
@@ -14,7 +13,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path={ROUTES.MAIN} element={<MainPage />} />
           <Route path={ROUTES.TIRES} element={<TiresPage />} />
           <Route path={ROUTES.TIRE_DETAIL} element={<TireDetailPage />} />
         </Route>
