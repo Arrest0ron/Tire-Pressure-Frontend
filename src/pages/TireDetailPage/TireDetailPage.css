@@ -112,7 +112,7 @@ body, #root, .main-content {
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.4;
   margin: 0 0 12px;
-  max-height: 4.4rem;
+  max-height: 5.4rem;
   overflow: hidden;
   position: relative;
   transition: max-height 0.3s ease;

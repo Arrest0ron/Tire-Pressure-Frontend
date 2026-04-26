@@ -1,72 +1,76 @@
 // src/modules/tireApi.ts
 
-// === Статусы заявки (из ds) ===
+const MINIO_PUBLIC_BASE =
+  (import.meta.env.VITE_MINIO_PUBLIC_BASE?.replace(/\/$/, "") as string | undefined) ??
+  "http://localhost:9000/test";
+
 export type TirePressureStatus = 'черновик' | 'удалён' | 'сформирован' | 'завершён' | 'отклонён';
 
-// === ds.Tire ===
 export interface Tire {
   tire_id: number;
   tire_title: string;
   description: string;
-  photo?: string;           // путь к файлу в MinIO (опционально)
-  video?: string;           // путь к файлу в MinIO (опционально)
-  tire_material_coefficient: number;   // М
-  tire_thickness_coefficient: number;  // Т
+  photo?: string;
+  video?: string;
+  tire_material_coefficient: number;
+  tire_thickness_coefficient: number;
   is_delete?: boolean;
+  short_description_en?: string;
 }
 
-// === ds.TirePressure ===
+export function tireClipDescription(t: Tire): string {
+  const en = t.short_description_en?.trim();
+  if (en) return en;
+  return "Tire product unit.";
+}
+
 export interface TirePressure {
   tire_pressure_id: number;
   status: TirePressureStatus;
-  date_create: string;              // ISO 8601
+  date_create: string;
   date_formed?: string | null;
   date_completed?: string | null;
   creator_id: number;
   moderator_id?: number | null;
-  air_temperature?: number | null;  // ✅ редактируется в черновике
-  car_weight?: number | null;       // ✅ редактируется в черновике
+  air_temperature?: number | null;
+  car_weight?: number | null;
 }
 
-// === ds.TirePressureEntry ===
 export interface TirePressureEntry {
   id: number;
   tire_pressure_id: number;
   tire_id: number;
-  tire: Tire;                       // вложенная сущность шины
-  coating_coefficient: number;      // ✅ редактируется в черновике
-  pressure: number;                 // рассчитанное значение, только просмотр
+  tire: Tire;
+  coating_coefficient: number;
+  pressure: number;
 }
 
-// === Вспомогательные интерфейсы для фронтенда ===
-
-// Корзина / черновик заявки
 export interface TirePressureCart {
   tire_pressure_id?: number;
   tires_count: number;
 }
 
-// Полный ответ для страницы заявки
 export interface TirePressureDetailResponse {
   application: TirePressure;
   entries: TirePressureEntry[];
 }
 
-// === Вспомогательные функции (без изменений — универсальные) ===
-
-
-/**
- * Возвращает путь к изображению-заглушке для шин
- * Файл должен лежать в папке public/ (корень статики)
- */
-export function fallbackImageUrl(): string {
-  return "src/assets/default_tire.png";
+// ✅ Утилиты
+export function objectUrlFromKey(key: string): string {
+  if (!key) return "";
+  return `${MINIO_PUBLIC_BASE}/${key.replace(/^\//, "")}`;
 }
 
-/**
- * Резолвит путь к медиа: если ключ уже содержит протокол или абсолютный путь — возвращает как есть,
- * иначе — fallback. Подходит для MinIO-ссылок.
- */
+export function fallbackImageUrl(): string {
+  return (
+    "data:image/svg+xml," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120" viewBox="0 0 200 120"><rect width="100%" height="100%" fill="#e8e8ec"/></svg>',
+    )
+  );
+}
+
+// ✅ resolveMediaUrl — добавлен обратно, чтобы не ломать импорты
 export function resolveMediaUrl(key: string): string {
   if (!key) return fallbackImageUrl();
   if (
@@ -78,5 +82,90 @@ export function resolveMediaUrl(key: string): string {
   ) {
     return key;
   }
-  return fallbackImageUrl();
+  return objectUrlFromKey(key);
+}
+
+// ✅ API-функции
+export async function getTirePressureCart(): Promise<TirePressureCart> {
+  try {
+    const res = await fetch("/api/tire_pressure/tire_pressure-cart", {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return { tire_pressure_id: undefined, tires_count: 0 };
+  }
+}
+
+export async function getTirePressure(
+  id: number,
+): Promise<TirePressureDetailResponse | null> {
+  const headers: Record<string, string> = { Accept: "application/json" };
+  const token = localStorage.getItem("token");
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await fetch(`/api/tire_pressure/${id}`, { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function listTires(params?: { title?: string }): Promise<Tire[]> {
+  try {
+    let path = "/api/tires";
+    if (params?.title) {
+      const q = new URLSearchParams();
+      q.append("Title", params.title);
+      path += `?${q.toString()}`;
+    }
+    const res = await fetch(path, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function getTire(id: number): Promise<Tire | null> {
+  try {
+    const res = await fetch(`/api/tire/${id}`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function addTireToApplication(
+  tireId: number,
+): Promise<{ ok: true } | { ok: false; status: number; message?: string }> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return { ok: false, status: 401, message: "Войдите в систему, чтобы добавить шину в заявку." };
+  }
+  try {
+    const res = await fetch(`/api/tire_app_tire/add/${tireId}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.ok || res.status === 201) return { ok: true };
+    let message: string | undefined;
+    try {
+      const j = (await res.json()) as { error?: string; message?: string };
+      message = j.error ?? j.message;
+    } catch {
+      message = await res.text();
+    }
+    return { ok: false, status: res.status, message: message || `HTTP ${res.status}` };
+  } catch {
+    return { ok: false, status: 0, message: "Не удалось выполнить запрос." };
+  }
 }
