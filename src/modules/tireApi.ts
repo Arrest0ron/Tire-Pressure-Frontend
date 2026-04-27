@@ -2,7 +2,7 @@
 
 const MINIO_PUBLIC_BASE =
   (import.meta.env.VITE_MINIO_PUBLIC_BASE?.replace(/\/$/, "") as string | undefined) ??
-  "http://localhost:9000/test";
+  "http://localhost:9090/tire-bucket";  
 
 export type TirePressureStatus = 'черновик' | 'удалён' | 'сформирован' | 'завершён' | 'отклонён';
 
@@ -15,7 +15,7 @@ export interface Tire {
   tire_material_coefficient: number;
   tire_thickness_coefficient: number;
   is_delete?: boolean;
-  short_description_en?: string;
+  short_description_en?: string; // ✅ для CLIP
 }
 
 export function tireClipDescription(t: Tire): string {
@@ -55,7 +55,6 @@ export interface TirePressureDetailResponse {
   entries: TirePressureEntry[];
 }
 
-// ✅ Утилиты
 export function objectUrlFromKey(key: string): string {
   if (!key) return "";
   return `${MINIO_PUBLIC_BASE}/${key.replace(/^\//, "")}`;
@@ -70,7 +69,6 @@ export function fallbackImageUrl(): string {
   );
 }
 
-// ✅ resolveMediaUrl — добавлен обратно, чтобы не ломать импорты
 export function resolveMediaUrl(key: string): string {
   if (!key) return fallbackImageUrl();
   if (
@@ -85,7 +83,7 @@ export function resolveMediaUrl(key: string): string {
   return objectUrlFromKey(key);
 }
 
-// ✅ API-функции
+// ✅ API-функции (параметр поиска — "Title", как шлёт фронтенд)
 export async function getTirePressureCart(): Promise<TirePressureCart> {
   try {
     const res = await fetch("/api/tire_pressure/tire_pressure-cart", {
@@ -118,7 +116,7 @@ export async function listTires(params?: { title?: string }): Promise<Tire[]> {
     let path = "/api/tires";
     if (params?.title) {
       const q = new URLSearchParams();
-      q.append("Title", params.title);
+      q.append("Title", params.title); // ✅ как в бэкенде
       path += `?${q.toString()}`;
     }
     const res = await fetch(path, { headers: { Accept: "application/json" } });
@@ -131,7 +129,7 @@ export async function listTires(params?: { title?: string }): Promise<Tire[]> {
 
 export async function getTire(id: number): Promise<Tire | null> {
   try {
-    const res = await fetch(`/api/tire/${id}`, {
+    const res = await fetch(`/api/tires/${id}`, {
       headers: { Accept: "application/json" },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

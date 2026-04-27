@@ -2,13 +2,11 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { cosineSimilarity } from "../modules/math";
 
-// Тип входных данных для хука (соответствует формату, который ждёт Worker)
 export type TireSearchItem = {
-  id: number;          // tire_id
-  description: string; // short_description_en
+  id: number;
+  description: string;
 };
 
-// Тип обработанных элементов с результатом поиска
 export interface IProcessedTireItem extends TireSearchItem {
   score: number;
   isVisible: boolean;
@@ -127,8 +125,6 @@ export const useTireImageSearch = (
       }
     };
 
-    // ✅ Хук не знает, откуда пришли initialItems — это могут быть данные из API или TIRES_MOCK.
-    // Worker получает только { id, description } и считает эмбеддинги локально.
     workerRef.current.postMessage({ type: "init", data: snapshot });
 
     return () => {
@@ -143,16 +139,17 @@ export const useTireImageSearch = (
     setItems((prevItems) => {
       if (!prevItems[0]?.embedding) return prevItems;
 
-      // ✅ Порог для SigLIP: 0.1–0.3 — хорошие совпадения, <0.1 — шум
-      // Для классического CLIP можно поставить 0.4–0.7
+      // ✅ Порог для SigLIP: 0.07 (эмпирически подобран)
       const threshold = 0.07;
+      // ✅ TopK: максимум 3 результата в выдаче
+      const topK = 3;
 
       const processed = prevItems.map((item) => {
         if (!item.embedding) return item;
 
         const similarity = cosineSimilarity(imageEmbedding, item.embedding);
 
-        // 🔍 Лог для отладки: видно, какие шины получили какой скор
+        // 🔍 Лог для отладки (можно закомментировать перед сдачей)
         console.log(`[CLIP] Tire ${item.id} "${item.description.substring(0, 30)}..." → similarity: ${similarity.toFixed(4)}`);
 
         return {
@@ -162,9 +159,18 @@ export const useTireImageSearch = (
         };
       });
 
+      // Сортируем по убыванию сходства
       processed.sort((a, b) => b.score - a.score);
 
-      return processed;
+      // ✅ Оставляем только topK видимых результатов
+      let visibleCount = 0;
+      return processed.map((item) => {
+        if (item.isVisible && visibleCount < topK) {
+          visibleCount++;
+          return item;
+        }
+        return { ...item, isVisible: false };
+      });
     });
   }, [imageEmbedding]);
 

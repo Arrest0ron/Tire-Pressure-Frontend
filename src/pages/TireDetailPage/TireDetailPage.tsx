@@ -1,7 +1,7 @@
 // src/pages/TireDetailPage/TireDetailPage.tsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { resolveMediaUrl, type Tire } from "../../modules/tireApi";
+import { resolveMediaUrl, type Tire, getTire } from "../../modules/tireApi"; // ✅ Import getTire
 import { getMockTire, TIRES_MOCK } from "../../modules/mock";
 import defaultTire from "../../assets/default_tire.png";
 import "./TireDetailPage.css";
@@ -9,26 +9,58 @@ import "./TireDetailPage.css";
 export default function TireDetailPage() {
   const { id } = useParams();
   
-  // ✅ Только 2 необходимых стейта
   const [tire, setTire] = useState<Tire | null>(null);
   const [mediaError, setMediaError] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ Loading state
 
   useEffect(() => {
     if (!id) {
       setTire(null);
+      setLoading(false);
       return;
     } 
+    
     setMediaError(false);
+    setLoading(true);
     const tireId = Number(id);
-    const resolved = getMockTire(tireId) ?? TIRES_MOCK.find((t) => t.tire_id === tireId) ?? null;
-    setTire(resolved);
+
+    // ✅ Try backend first, fallback to mock
+    getTire(tireId)
+      .then(data => {
+        if (data) {
+          setTire(data);
+        } else {
+          // Fallback to mock if backend returns null
+          const resolved = getMockTire(tireId) ?? TIRES_MOCK.find((t) => t.tire_id === tireId) ?? null;
+          setTire(resolved);
+        }
+      })
+      .catch(() => {
+        // Fallback to mock on network error
+        const resolved = getMockTire(tireId) ?? TIRES_MOCK.find((t) => t.tire_id === tireId) ?? null;
+        setTire(resolved);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+      
   }, [id]);
 
+  // ✅ Now video will come from backend!
   const videoUrl = tire?.video ? resolveMediaUrl(tire.video) : "";
   const fallbackUrl = tire?.photo ? resolveMediaUrl(tire.photo) : defaultTire;
   const showVideo = Boolean(videoUrl) && !mediaError;
 
-  // Если id нет или шина не найдена
+  if (loading) {
+    return (
+      <div className="vibes-page vibes-page--scroll">
+        <div className="tire-not-found">
+          <h1>Загрузка...</h1>
+        </div>
+      </div>
+    );
+  }
+
   if (!id || !tire) {
     return (
       <div className="vibes-page vibes-page--scroll">
