@@ -83,7 +83,7 @@ export function resolveMediaUrl(key: string): string {
   return objectUrlFromKey(key);
 }
 
-// ✅ API-функции (параметр поиска — "Title", как шлёт фронтенд)
+// 
 export async function getTirePressureCart(): Promise<TirePressureCart> {
   try {
     const res = await fetch("/api/tire_pressure/tire_pressure-cart", {
@@ -96,27 +96,27 @@ export async function getTirePressureCart(): Promise<TirePressureCart> {
   }
 }
 
-export async function getTirePressure(
-  id: number,
-): Promise<TirePressureDetailResponse | null> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  const token = localStorage.getItem("token");
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  try {
-    const res = await fetch(`/api/tire_pressure/${id}`, { headers });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
+// export async function getTirePressure(
+//   id: number,
+// ): Promise<TirePressureDetailResponse | null> {
+//   const headers: Record<string, string> = { Accept: "application/json" };
+//   const token = localStorage.getItem("token");
+//   if (token) headers["Authorization"] = `Bearer ${token}`;
+//   try {
+//     const res = await fetch(`/api/tire_pressure/${id}`, { headers });
+//     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//     return await res.json();
+//   } catch {
+//     return null;
+//   }
+// }
 
 export async function listTires(params?: { title?: string }): Promise<Tire[]> {
   try {
     let path = "/api/tires";
     if (params?.title) {
       const q = new URLSearchParams();
-      q.append("Title", params.title); // ✅ как в бэкенде
+      q.append("Title", params.title); 
       path += `?${q.toString()}`;
     }
     const res = await fetch(path, { headers: { Accept: "application/json" } });
@@ -139,31 +139,31 @@ export async function getTire(id: number): Promise<Tire | null> {
   }
 }
 
-export async function addTireToApplication(
-  tireId: number,
-): Promise<{ ok: true } | { ok: false; status: number; message?: string }> {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return { ok: false, status: 401, message: "Войдите в систему, чтобы добавить шину в заявку." };
-  }
-  try {
-    const res = await fetch(`/api/tire_app_tire/add/${tireId}`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.ok || res.status === 201) return { ok: true };
-    let message: string | undefined;
-    try {
-      const j = (await res.json()) as { error?: string; message?: string };
-      message = j.error ?? j.message;
-    } catch {
-      message = await res.text();
-    }
-    return { ok: false, status: res.status, message: message || `HTTP ${res.status}` };
-  } catch {
-    return { ok: false, status: 0, message: "Не удалось выполнить запрос." };
-  }
-}
+// export async function addTireToApplication(
+//   tireId: number,
+// ): Promise<{ ok: true } | { ok: false; status: number; message?: string }> {
+//   const token = localStorage.getItem("token");
+//   if (!token) {
+//     return { ok: false, status: 401, message: "Войдите в систему, чтобы добавить шину в заявку." };
+//   }
+//   try {
+//     const res = await fetch(`/api/tire_app_tire/add/${tireId}`, {
+//       method: "POST",
+//       headers: {
+//         Accept: "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     if (res.ok || res.status === 201) return { ok: true };
+//     let message: string | undefined;
+//     try {
+//       const j = (await res.json()) as { error?: string; message?: string };
+//       message = j.error ?? j.message;
+//     } catch {
+//       message = await res.text();
+//     }
+//     return { ok: false, status: res.status, message: message || `HTTP ${res.status}` };
+//   } catch {
+//     return { ok: false, status: 0, message: "Не удалось выполнить запрос." };
+//   }
+// }
