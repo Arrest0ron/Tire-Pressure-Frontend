@@ -1,71 +1,94 @@
 // src/components/CartRow/CartRow.tsx
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getTirePressureCart, type TirePressureCart } from "../../modules/tireApi";
-import { MOCK_CART } from "../../modules/mock";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchTirePressureCart } from "../../store/slices/tirePressureSlice";
 import cartIcon from "../../assets/cart.png";
 import "./CartRow.css";
 
 export default function CartRow() {
-  const [cart, setCart] = useState<TirePressureCart>(MOCK_CART);
-  const [loading, setLoading] = useState(true);
+  console.log("🟢 [CartRow] Компонент смонтирован");
+  
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector(s => s.user);
+  const { cart, cartLoading } = useAppSelector(s => s.tirePressure);
 
-  // ✅ Запрос к бэкенду при монтировании (без токена!)
+  // 🔹 Загружаем корзину при монтировании И при смене статуса авторизации
   useEffect(() => {
-    let cancelled = false;
-
-    getTirePressureCart()
-      .then(data => {
-        if (!cancelled) {
-          setCart(data);
-          setLoading(false);
-        }
+    console.log("📡 [CartRow] useEffect: isAuthenticated =", isAuthenticated);
+    
+    void dispatch(fetchTirePressureCart())
+      .then((result) => {
+        console.log("✅ [CartRow] Запрос завершён. Результат:", result);
       })
-      .catch(() => {
-        // Fallback на моки при ошибке сети
-        if (!cancelled) {
-          setCart(MOCK_CART);
-          setLoading(false);
-        }
-      });
+      .catch(e => console.error("❌ [CartRow] Ошибка в thunk:", e));
+      
+  }, [dispatch, isAuthenticated]); // ← Перезапускается при смене isAuthenticated
 
-    return () => { cancelled = true; };
-  }, []);
+  // 🔹 Слушаем кастомное событие обновления корзины (от TireCard после добавления)
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      console.log("🔄 [CartRow] Получено событие tire-pressure-cart-updated");
+      void dispatch(fetchTirePressureCart());
+    };
+    
+    window.addEventListener("tire-pressure-cart-updated", handleCartUpdate);
+    return () => {
+      console.log("🧹 [CartRow] Удаляем слушатель события");
+      window.removeEventListener("tire-pressure-cart-updated", handleCartUpdate);
+    };
+  }, [dispatch]);
 
-  // Пока грузим — показываем заглушку
-  if (loading) {
-    return (
-      <div className="cart-badge cart-loading" role="status" aria-label="Загрузка корзины">
-        <img src={cartIcon} alt="Корзина" className="cart-icon" />
-        <span className="cart-count">…</span>
-      </div>
-    );
-  }
+  // 🔹 Извлекаем данные с защитой от невалидных значений
+  const count = isAuthenticated ? (cart?.tires_count ?? 0) : 0;
+  
+  // ✅ Ключевое исправление: id=0 считаем "нет черновика", только id>0 — валидный
+  const validId = (cart?.id != null && cart?.id > 0) ? cart?.id : undefined;
+  const hasDraft = isAuthenticated && Boolean(validId);
+  const applicationId = validId;
+  
+  // 🔹 Финальное условие: все 4 фактора должны быть истинными
+  const isActive = isAuthenticated && hasDraft && count > 0 && applicationId != null;
+
+  // 🔥 Отладочный вывод ВСЕХ условий в консоль
+  useEffect(() => {
+    console.group("🔍 CartRow: проверка условий");
+    console.log("  isAuthenticated:", isAuthenticated);
+    console.log("  cart:", cart);
+    console.log("  count (tires_count):", count);
+    console.log("  validId (id>0?):", validId);
+    console.log("  hasDraft:", hasDraft);
+    console.log("  applicationId:", applicationId);
+    console.log("  ✅ isActive:", isActive);
+    console.groupEnd();
+  }, [isAuthenticated, cart, count, validId, hasDraft, applicationId, isActive]);
 
   const inner = (
     <>
       <img src={cartIcon} alt="Корзина" className="cart-icon" />
-      <span className="cart-count" aria-label={`Товаров в заявке: ${cart.tires_count}`}>
-        {cart.tires_count}
+      <span className="cart-count" aria-label={`Шин в заявке: ${count}`}>
+        {count}{cartLoading ? "…" : ""}
       </span>
     </>
   );
 
-  // ✅ Если есть активная заявка и товары — ссылка ведёт на неё
-  if (cart.tire_pressure_id != null && cart.tires_count > 0) {
+  // 🔹 Рендер активной ссылки
+  if (isActive) {
+    console.log("🟢 Рендер: АКТИВНАЯ ссылка → /application/", applicationId);
     return (
       <div className="cart-badge" role="navigation" aria-label="Перейти к заявке">
-        <Link to={`/application/${cart.tire_pressure_id}`}>
+        <Link to={`/application/${applicationId}`} className="cart-link">
           {inner}
         </Link>
       </div>
     );
   }
 
-  // ✅ Если корзина пуста — иконка неактивна
+  // 🔹 Рендер неактивной иконки
+  console.log("🔴 Рендер: НЕАКТИВНАЯ иконка (условия не выполнены)");
   return (
     <div className="cart-badge cart-inactive" role="navigation" aria-label="Корзина пуста">
-      <Link to="#!" onClick={(e) => e.preventDefault()}>
+      <Link to="#!" onClick={(e) => e.preventDefault()} tabIndex={-1} aria-disabled="true">
         {inner}
       </Link>
     </div>

@@ -1,0 +1,258 @@
+/* src/pages/ApplicationPage/ApplicationPage.css */
+
+/* === Глобальный фон страницы === */
+body, #root, .main-content {
+  background-color: #f1f1f1 !important;
+}
+
+.main-content {
+  padding: 30px 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* === Контейнер заявки === */
+.application-page {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.application-detail {
+  background: #ffffff;
+  border: 1px solid #6b6b6b;
+  border-radius: 6px;
+  padding: 24px;
+  max-width: 1160px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* === Заголовок заявки === */
+.application-detail__header-card {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 24px;
+}
+
+.application-detail__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a5fac;
+  margin: 0 0 12px;
+}
+
+.application-detail__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  font-size: 14px;
+  color: #333;
+}
+
+.application-detail__info-item strong {
+  color: #666;
+  margin-right: 4px;
+}
+
+/* === Статус заявки === */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* === Блок параметров расчёта === */
+.calculation-params {
+  background: #fafafa;
+  border: 1px solid #e8e8ec;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.calculation-params h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.params-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.param-group label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.param-group .form-control {
+  max-width: 140px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 2px solid #e8e8ec;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.param-group .form-control:focus {
+  border-color: #ed1c24;
+  outline: none;
+}
+
+.param-group .form-control:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-with-unit .unit {
+  font-size: 13px;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* === Таблица записей === */
+.app-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+  border: 1px solid #6b6b6b;
+  border-radius: 6px;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: #fff;
+  min-width: 600px; /* Гарантирует скролл на узких экранах */
+}
+
+.app-table th {
+  background: #fafafa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #6b6b6b;
+  white-space: nowrap;
+}
+
+.app-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.app-table tr:hover {
+  background: #f9f9f9;
+}
+
+.app-table__col-photo {
+  width: 70px;
+  text-align: center;
+}
+
+.app-table__col-photo img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+}
+
+.app-table__col-coating .form-control {
+  max-width: 80px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.app-table__col-coating .form-control:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.app-table__col-pressure {
+  font-weight: 700;
+  color: #ea5fac;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* === Кнопки действий === */
+.application-page__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.application-page__delete-btn {
+  background: #dc3545;
+  margin-right: auto;
+}
+
+.application-page__delete-btn:hover {
+  background: #c82333;
+}
+
+.search-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: #ed1c24;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-btn:hover {
+  background: #c7181e;
+}
+
+.search-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* === Сообщение "не найдено" === */
+.application-not-found {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 16px;
+  background: #fff;
+  border: 1px solid #6b6b6b;
+  border-radius: 6px;
+  max-width: 400px;
+  margin: 0 auto;
+}
