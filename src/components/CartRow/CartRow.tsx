@@ -74,10 +74,10 @@ export default function CartRow() {
 
   // 🔹 Рендер активной ссылки
   if (isActive) {
-    console.log("🟢 Рендер: АКТИВНАЯ ссылка → /application/", applicationId);
+    console.log("🟢 Рендер: АКТИВНАЯ ссылка → /tire-pressure/", applicationId);
     return (
       <div className="cart-badge" role="navigation" aria-label="Перейти к заявке">
-        <Link to={`/application/${applicationId}`} className="cart-link">
+        <Link to={`/tire-pressure/${applicationId}`} className="cart-link">
           {inner}
         </Link>
       </div>

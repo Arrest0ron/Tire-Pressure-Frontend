@@ -101,7 +101,6 @@ export interface SerializerTirePressureUpdateJSON {
 export interface SerializerTirePressureEntryUpdateJSON {
   pressure?: number;
   coating_coefficient?: number;
-  direction?: string;
 }
 
 // ─── HttpClient (как в примере) ───────────────────────────────────────

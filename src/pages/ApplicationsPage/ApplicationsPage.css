@@ -1,0 +1,121 @@
+/* src/pages/ApplicationsPage/ApplicationsPage.css */
+.applications-page__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #6b6b6b;
+  border-radius: 8px;
+}
+
+.applications-page__heading {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: #0a5fac;
+}
+
+/* === Фильтры === */
+.applications-page__filters {
+  background: #fafafa;
+  border: 1px solid #e8e8ec;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.applications-page__filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.applications-page__fg {
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.applications-page__fg--grow {
+  flex: 2 1 250px;
+}
+
+.applications-page__apply {
+  margin-top: 16px;
+  background: #ed1c24;
+  border: none;
+}
+
+.applications-page__apply:hover {
+  background: #c7181e;
+}
+
+/* === Таблица === */
+.applications-page__table-wrap {
+  overflow-x: auto;
+}
+
+.applications-page__table th {
+  background: #fafafa;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.applications-page__table td {
+  vertical-align: middle;
+}
+
+.applications-page__linkish {
+  background: none;
+  border: none;
+  color: #0a5fac;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.applications-page__linkish:hover {
+  color: #c7181e;
+}
+
+.applications-page__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.applications-page__error {
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.applications-page__loader {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.applications-page__empty {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+  .applications-page__filter-row {
+    flex-direction: column;
+  }
+  .applications-page__fg {
+    width: 100%;
+  }
+  .applications-page__actions {
+    flex-direction: column;
+  }
+}

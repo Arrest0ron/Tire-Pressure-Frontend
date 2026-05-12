@@ -406,3 +406,42 @@ body, #root, .main-content {
   color: #666;
   text-align: center;
 }
+
+/* ============================================================ */
+/* 🔹 ФИКС ШИРИНЫ: Секция CLIP-поиска = ширина сетки карточек */
+/* ============================================================ */
+
+.tires-page__clip-search.clip-search-section {
+  width: 100%;
+  max-width: 1160px;      /* ✅ Как у .tires-grid */
+  margin-left: auto;      /* ✅ Центрирование */
+  margin-right: auto;
+  box-sizing: border-box;
+  padding: 0 20px;        /* ✅ Отступы по краям для мобильных */
+}
+
+/* 🔹 Панель внутри секции: убираем лишние отступы, чтобы контент был в одной линии с карточками */
+.tires-page__clip-search.clip-search-section .clip-search-section__panel {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 20px;          /* Внутренний отступ панели */
+}
+
+/* 🔹 Результаты поиска: тоже центрируем и ограничиваем ширину */
+.tires-page__clip-results {
+  width: 100%;
+  max-width: 1160px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;        /* Отступы по краям */
+  box-sizing: border-box;
+}
+
+/* 🔹 Адаптив: на мобильных — на всю ширину с отступами */
+@media (max-width: 1200px) {
+  .tires-page__clip-search.clip-search-section,
+  .tires-page__clip-results {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+}
