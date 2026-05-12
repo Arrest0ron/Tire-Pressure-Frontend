@@ -5,9 +5,9 @@ import TireDetailPage from "./pages/TireDetailPage/TireDetailPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 
-// ✅ Импортируем РЕАЛЬНУЮ страницу деталей заявки
-import ApplicationPage from "./pages/ApplicationPage/ApplicationPage";
-import ApplicationsPage from "./pages/ApplicationsPage/ApplicationsPage";
+// ✅ Импортируем переименованные компоненты
+import TirePressurePage from "./pages/TirePressurePage/TirePressurePage";
+import TirePressuresPage from "./pages/TirePressuresPage/TirePressuresPage";
 
 import { ROUTES } from "./Routes";
 import MainLayout from "./layouts/MainLayout";
@@ -31,11 +31,13 @@ function App() {
           
           {/* === Страницы заявок (защита внутри компонентов) === */}
           
-          {/* 🔹 Список заявок — заглушка */}
-          <Route path={ROUTES.APPLICATIONS} element={<ApplicationsPage />} />
+          {/* 🔹 Список заявок */}
+          {/* ✅ ИЗМЕНЕНО: APPLICATIONS → TIRE_PRESSURES, ApplicationsPage → TirePressuresPage */}
+          <Route path={ROUTES.TIRE_PRESSURES} element={<TirePressuresPage />} />
           
-          {/* 🔹 Детали заявки — РЕАЛЬНЫЙ компонент (защита внутри ApplicationPage) */}
-          <Route path={ROUTES.APPLICATION} element={<ApplicationPage />} />
+          {/* 🔹 Детали заявки */}
+          {/* ✅ ИЗМЕНЕНО: APPLICATION → TIRE_PRESSURE, ApplicationPage → TirePressurePage */}
+          <Route path={ROUTES.TIRE_PRESSURE} element={<TirePressurePage />} />
           
           {/* === Редиректы === */}
           <Route path="/tires" element={<Navigate to={ROUTES.TIRES} replace />} />

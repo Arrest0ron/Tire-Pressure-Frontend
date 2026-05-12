@@ -1,4 +1,4 @@
-// src/pages/ApplicationPage/ApplicationPage.tsx
+// src/pages/TirePressurePage/TirePressurePage.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Form, Spinner, Alert } from "react-bootstrap";
@@ -18,9 +18,9 @@ import {
   deleteTirePressureApplication,
 } from "../../store/slices/tirePressureSlice";
 import { ROUTES } from "../../Routes";
-import "./ApplicationPage.css";
+import "./TirePressurePage.css";
 
-export default function ApplicationPage() {
+export default function TirePressurePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -69,7 +69,7 @@ export default function ApplicationPage() {
       // Инициализируем черновики коэффициентов: ключ = tire_id
       const initial: Record<number, number> = {};
       detail?.entries?.forEach((e) => {
-        const key = e.tire_id; // ✅ Используем tire_id как ключ (всегда есть)
+        const key = e.tire_id;
         if (key != null) initial[key] = e.coating_coefficient ?? 0;
       });
       setCoatingDrafts(initial);
@@ -82,13 +82,13 @@ export default function ApplicationPage() {
   }, [detail?.entries]);
 
   const isDraft = app?.status === "черновик";
-  const applicationId = app?.tire_pressure_id;
+  const tirePressureId = app?.tire_pressure_id;
 
   // ─── Обработчики ─────────────────────────────────────────────
 
   // 🔹 Кнопка 1: Сохранить параметры заявки
   const handleSaveAppParams = async () => {
-    if (!applicationId || !isDraft || !app) return;
+    if (!tirePressureId || !isDraft || !app) return;
     const airTemp = airTempDraft.trim() === "" ? null : Number(airTempDraft);
     const carWeight = carWeightDraft.trim() === "" ? null : Number(carWeightDraft);
     if ((airTemp && Number.isNaN(airTemp)) || (carWeight && Number.isNaN(carWeight))) return;
@@ -96,7 +96,7 @@ export default function ApplicationPage() {
     try {
       await dispatch(
         updateTirePressureParams({
-          applicationId,
+          tirePressureId,
           body: {
             air_temperature: airTemp ?? undefined,
             car_weight: carWeight ?? undefined,
@@ -111,30 +111,26 @@ export default function ApplicationPage() {
   };
 
   // 🔹 Кнопка 4: Сохранить запись (коэффициент)
-  // ✅ Принимает tireId (для бэкенда) и coating (значение)
-// 🔹 Кнопка 4: Сохранить запись (коэффициент) — обновлённая версия
   const handleSaveEntry = async (tireId: number, coating: number) => {
-    if (!applicationId || !isDraft) return;
+    if (!tirePressureId || !isDraft) return;
     if (coating == null) return;
 
     try {
       const result = await dispatch(
         updateTireEntryInApplication({
           tireId,
-          applicationId,
+          tirePressureId,
           body: { coating_coefficient: coating },
         }),
       ).unwrap();
       
-      // ✅ После успеха — синхронизируем локальный черновик с новым значением
       setCoatingDrafts(prev => ({
         ...prev,
-        [tireId]: coating, // или result.coating_coefficient, если бэкенд возвращает обновлённое
+        [tireId]: coating,
       }));
       
     } catch (err) {
       console.error("Ошибка сохранения записи:", err);
-      // При ошибке — откатываем черновик к значению из Redux
       const entry = detail?.entries?.find(e => e.tire_id === tireId);
       if (entry) {
         setCoatingDrafts(prev => ({
@@ -147,14 +143,14 @@ export default function ApplicationPage() {
 
   // 🔹 Кнопка 5: Убрать шину из заявки
   const handleRemoveEntry = async (tireId: number) => {
-    if (!applicationId || !isDraft) return;
+    if (!tirePressureId || !isDraft) return;
     if (!window.confirm("Убрать эту шину из заявки?")) return;
     const mutationKey = `rm-${tireId}`;
     if (itemMutationLoading?.[mutationKey]) return;
 
     try {
       await dispatch(
-        removeTireEntryFromApplication({ tireId, applicationId }),
+        removeTireEntryFromApplication({ tireId, tirePressureId }),
       ).unwrap();
     } catch (err) {
       console.error("Ошибка удаления шины:", err);
@@ -163,9 +159,9 @@ export default function ApplicationPage() {
 
   // 🔹 Кнопка 2: Подтвердить заявку
   const handleForm = async () => {
-    if (!applicationId || !isDraft) return;
+    if (!tirePressureId || !isDraft) return;
     try {
-      await dispatch(formTirePressureApplication(applicationId)).unwrap();
+      await dispatch(formTirePressureApplication(tirePressureId)).unwrap();
     } catch (err) {
       console.error("Ошибка подтверждения заявки:", err);
     }
@@ -174,10 +170,10 @@ export default function ApplicationPage() {
   // 🔹 Кнопка 3: Удалить заявку
   const handleDeleteApplication = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!applicationId || !isDraft) return;
+    if (!tirePressureId || !isDraft) return;
     if (!window.confirm("Удалить заявку? Это действие нельзя отменить.")) return;
     try {
-      await dispatch(deleteTirePressureApplication(applicationId)).unwrap();
+      await dispatch(deleteTirePressureApplication(tirePressureId)).unwrap();
       navigate(ROUTES.TIRES, { replace: true });
     } catch (err) {
       console.error("Ошибка удаления заявки:", err);
@@ -189,7 +185,7 @@ export default function ApplicationPage() {
   if (!isAuthenticated) return null;
   if (detailLoading && !detail) {
     return (
-      <div className="application-page">
+      <div className="tire-pressure-page">
         <div className="device-page-loader">
           <Spinner animation="border" role="status"><span className="visually-hidden">Загрузка...</span></Spinner>
         </div>
@@ -198,7 +194,7 @@ export default function ApplicationPage() {
   }
   if (detailError && !detail) {
     return (
-      <div className="application-page">
+      <div className="tire-pressure-page">
         <Alert variant="danger">
           <Alert.Heading>Ошибка загрузки</Alert.Heading>
           <p>{detailError}</p>
@@ -207,32 +203,33 @@ export default function ApplicationPage() {
       </div>
     );
   }
-  if (!detail || !app || !applicationId) {
+  if (!detail || !app || !tirePressureId) {
     return (
-      <div className="application-page">
-        <p className="application-not-found">Заявка не найдена.</p>
+      <div className="tire-pressure-page">
+        <p className="tire-pressure-not-found">Заявка не найдена.</p>
         <Button variant="secondary" onClick={() => navigate(ROUTES.TIRES)}>← На главную</Button>
       </div>
     );
   }
 
+  // ✅ Убраны эмодзи из статусов
   const statusLabel =
-    app.status === "черновик" ? "📝 Черновик" :
-    app.status === "сформирован" ? "✅ Сформирована" :
-    app.status === "завершён" ? "✅ Завершена" : "❌ Отклонена";
+    app.status === "черновик" ? "Черновик" :
+    app.status === "сформирован" ? "Сформирована" :
+    app.status === "завершён" ? "Завершена" : "Отклонена";
 
   return (
-    <div className="application-page">
-      <div className="application-detail">
+    <div className="tire-pressure-page">
+      <div className="tire-pressure-detail">
 
         {/* === Заголовок заявки === */}
-        <div className="application-detail__header-card">
-          <h1 className="application-detail__title">Заявка на расчет давления в шинах</h1>
-          <div className="application-detail__info">
-            <div className="application-detail__info-item"><strong>ID заявки:</strong> {applicationId}</div>
-            <div className="application-detail__info-item"><strong>Статус:</strong> <span className="status-badge">{statusLabel}</span></div>
-            <div className="application-detail__info-item"><strong>Шин в расчёте:</strong> {sortedEntries.length}</div>
-            {app.creator_login && <div className="application-detail__info-item"><strong>Создатель:</strong> {app.creator_login}</div>}
+        <div className="tire-pressure-detail__header-card">
+          <h1 className="tire-pressure-detail__title">Заявка на расчет давления в шинах</h1>
+          <div className="tire-pressure-detail__info">
+            <div className="tire-pressure-detail__info-item"><strong>ID заявки:</strong> {tirePressureId}</div>
+            <div className="tire-pressure-detail__info-item"><strong>Статус:</strong> <span className="status-badge">{statusLabel}</span></div>
+            <div className="tire-pressure-detail__info-item"><strong>Шин в расчёте:</strong> {sortedEntries.length}</div>
+            {app.creator_login && <div className="tire-pressure-detail__info-item"><strong>Создатель:</strong> {app.creator_login}</div>}
           </div>
         </div>
 
@@ -286,13 +283,13 @@ export default function ApplicationPage() {
                 >
                   {applicationMutationLoading ? (
                     <><Spinner animation="border" size="sm" className="me-1" /> Сохранение...</>
-                  ) : "💾 Сохранить параметры"}
+                  ) : "Сохранить параметры"}
                 </Button>
               </div>
             </div>
 
             {/* Кнопки 2 и 3: Подтвердить / Удалить заявку */}
-            <div className="application-page__actions application-page__actions--top">
+            <div className="tire-pressure-page__actions tire-pressure-page__actions--top">
               <Button
                 type="button"
                 variant="success"
@@ -300,7 +297,7 @@ export default function ApplicationPage() {
                 onClick={handleForm}
                 disabled={applicationMutationLoading || sortedEntries.length === 0}
               >
-                {applicationMutationLoading ? "Отправка..." : "✅ Подтвердить заявку"}
+                {applicationMutationLoading ? "Отправка..." : "Подтвердить заявку"}
               </Button>
               <Button
                 type="button"
@@ -308,23 +305,23 @@ export default function ApplicationPage() {
                 onClick={handleDeleteApplication}
                 disabled={applicationMutationLoading}
               >
-                🗑️ Удалить заявку
+                Удалить заявку
               </Button>
             </div>
           </>
         )}
 
         {/* === Таблица записей === */}
-        <div className="app-table-wrapper">
-          <table className="app-table">
+        <div className="tire-pressure-table-wrapper">
+          <table className="tire-pressure-table">
             <thead>
               <tr>
-                <th className="app-table__col-photo">Фото</th>
-                <th className="app-table__col-name">Название шины</th>
-                <th className="app-table__col-coeff">М / Т</th>
-                <th className="app-table__col-coating">Коэф. покрытия</th>
-                <th className="app-table__col-pressure">Давление (кПа)</th>
-                {isDraft && <th className="app-table__col-actions">Действия</th>}
+                <th className="tire-pressure-table__col-photo">Фото</th>
+                <th className="tire-pressure-table__col-name">Название шины</th>
+                <th className="tire-pressure-table__col-coeff">М / Т</th>
+                <th className="tire-pressure-table__col-coating">Коэф. покрытия</th>
+                <th className="tire-pressure-table__col-pressure">Давление (кПа)</th>
+                {isDraft && <th className="tire-pressure-table__col-actions">Действия</th>}
               </tr>
             </thead>
             <tbody>
@@ -333,19 +330,17 @@ export default function ApplicationPage() {
                 const rawPhoto = entry.photo || tire?.photo || "";
                 const photoUrl = rawPhoto ? resolveMediaUrl(rawPhoto) : fallbackImageUrl();
                 
-                // ✅ КЛЮЧЕВОЕ: используем tire_id как ключ для черновиков (он всегда есть)
                 const draftKey = entry.tire_id ?? 0;
                 const tireId = entry.tire_id ?? 0;
                 
                 const isSaving = itemMutationLoading?.[`entry-${tireId}`];
                 const isRemoving = itemMutationLoading?.[`rm-${tireId}`];
                 
-                // ✅ Берём значение из черновика или из бэкенда
                 const coatingValue = coatingDrafts[draftKey] ?? entry.coating_coefficient ?? 0;
 
                 return (
                   <tr key={entry.id ?? tireId}>
-                    <td className="app-table__col-photo">
+                    <td className="tire-pressure-table__col-photo">
                       <img
                         src={photoUrl}
                         alt={tire?.tire_title || entry.tire_title || `Шина #${tireId}`}
@@ -354,16 +349,16 @@ export default function ApplicationPage() {
                         }}
                       />
                     </td>
-                    <td className="app-table__col-name" title={tire?.tire_title || entry.tire_title || `Шина #${tireId}`}>
+                    <td className="tire-pressure-table__col-name" title={tire?.tire_title || entry.tire_title || `Шина #${tireId}`}>
                       {tire?.tire_title || entry.tire_title || `Шина #${tireId}`}
                     </td>
-                    <td className="app-table__col-coeff">
+                    <td className="tire-pressure-table__col-coeff">
                       <div className="coeff-cell">
                         <div><small>М:</small> {tire?.tire_material_coefficient ?? "—"}</div>
                         <div><small>Т:</small> {tire?.tire_thickness_coefficient ?? "—"}</div>
                       </div>
                     </td>
-                    <td className="app-table__col-coating">
+                    <td className="tire-pressure-table__col-coating">
                       <Form.Control
                         type="number"
                         step="0.01"
@@ -371,7 +366,6 @@ export default function ApplicationPage() {
                         max="1"
                         value={coatingValue}
                         onChange={(e) => {
-                          // ✅ Обновляем черновик по ключу tire_id
                           const val = e.target.value === "" ? 0 : Number(e.target.value);
                           setCoatingDrafts(prev => ({ ...prev, [draftKey]: val }));
                         }}
@@ -379,26 +373,25 @@ export default function ApplicationPage() {
                         className="form-control coating-input"
                       />
                     </td>
-                    <td className="app-table__col-pressure">
+                    <td className="tire-pressure-table__col-pressure">
                       {entry.pressure != null && entry.pressure > 0 ? `${entry.pressure.toFixed(2)}` : "—"}
                     </td>
                     {isDraft && (
-                      <td className="app-table__col-actions">
+                      <td className="tire-pressure-table__col-actions">
                         <div className="d-flex justify-content-center gap-1 flex-wrap">
-                          {/* Кнопка 4: Сохранить запись */}
+                          {/* Кнопка 4: Сохранить запись — текст вместо эмодзи */}
                           <Button
                             type="button"
                             variant="outline-primary"
                             size="sm"
-                            // ✅ Передаем tireId и текущее значение из черновика
                             onClick={() => handleSaveEntry(tireId, coatingDrafts[draftKey] ?? coatingValue)}
                             disabled={isSaving || applicationMutationLoading}
                             title="Сохранить изменения для этой шины"
                             className="flex-shrink-0 px-2 py-1"
                           >
-                            {isSaving ? <Spinner animation="border" size="sm" /> : "💾"}
+                            {isSaving ? <Spinner animation="border" size="sm" /> : "Сохранить"}
                           </Button>
-                          {/* Кнопка 5: Убрать из заявки */}
+                          {/* Кнопка 5: Убрать из заявки — текст вместо эмодзи */}
                           <Button
                             type="button"
                             variant="outline-danger"
@@ -408,7 +401,7 @@ export default function ApplicationPage() {
                             title="Убрать шину из заявки"
                             className="flex-shrink-0 px-2 py-1"
                           >
-                            {isRemoving ? <Spinner animation="border" size="sm" /> : "❌"}
+                            {isRemoving ? <Spinner animation="border" size="sm" /> : "Убрать"}
                           </Button>
                         </div>
                       </td>
@@ -421,7 +414,7 @@ export default function ApplicationPage() {
         </div>
 
         {/* === Кнопка навигации (всегда) === */}
-        <div className="application-page__actions">
+        <div className="tire-pressure-page__actions">
           <Button
             type="button"
             variant="secondary"

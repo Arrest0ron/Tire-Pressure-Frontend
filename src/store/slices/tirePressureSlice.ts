@@ -28,7 +28,6 @@ export interface SerializerTirePressureJSON {
   date_completed?: string;
   moderator_login?: string;
   tire_entries_count?: number;
-  title?: string;
 }
 
 export interface SerializerTirePressureEntryJSON {
@@ -52,12 +51,11 @@ export interface SerializerTirePressureEntryUpdateJSON {
   coating_coefficient?: number;
 }
 
-
-// Стало:
 export interface SerializerFinishJSON {
   status: "завершён" | "отклонён";  // ✅ Русские значения, как в бэкенде
 }
-// Найди функцию defaultListFilters() и замени на:
+
+// ─── Вспомогательные функции ───────────────────────────────────────────
 function defaultListFilters() {
   return { fromDate: "", toDate: "", status: "" }; // ✅ Пустые значения = показать всё
 }
@@ -74,7 +72,7 @@ function buildInitialState() {
     listError: null as string | null,
     filters: defaultListFilters(),
     itemMutationLoading: {} as Record<string, boolean>,
-    applicationMutationLoading: false,
+    applicationMutationLoading: false,  // ✅ Оставляем: это имя состояния, не параметр
   };
 }
 
@@ -82,7 +80,6 @@ function asDetail(data: unknown): TirePressureDetailPayload | null {
   if (!data || typeof data !== "object") return null;
   const o = data as Record<string, unknown>;
 
-  // 🔹 Бэкенд возвращает плоскую структуру
   if (Array.isArray(o.entries)) {
     const { entries, ...appData } = o;
     return {
@@ -91,7 +88,6 @@ function asDetail(data: unknown): TirePressureDetailPayload | null {
     };
   }
 
-  // 🔹 Запасной вариант
   const app = o.application;
   if (app && typeof app === "object" && Array.isArray(o.entries)) {
     return {
@@ -134,11 +130,12 @@ export const fetchTirePressureCart = createAsyncThunk(
 );
 
 // ─── Thunk: детали заявки ──────────────────────────────────────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const fetchTirePressureDetail = createAsyncThunk(
   "tirePressure/fetchDetail",
-  async (applicationId: number, { rejectWithValue }) => {
+  async (tirePressureId: number, { rejectWithValue }) => {  // ✅
     try {
-      const r = await api.tirePressure.tirePressuresDetail(applicationId);
+      const r = await api.tirePressure.tirePressuresDetail(tirePressureId);  // ✅
       const detail = asDetail(r.data);
       if (!detail) return rejectWithValue("Неверный ответ сервера");
       return detail;
@@ -168,15 +165,16 @@ export const addTireToCart = createAsyncThunk(
 );
 
 // ─── Thunk: обновить параметры заявки ───────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const updateTirePressureParams = createAsyncThunk(
   "tirePressure/updateParams",
   async (
-    { applicationId, body }: { applicationId: number; body: SerializerTirePressureUpdateJSON },
+    { tirePressureId, body }: { tirePressureId: number; body: SerializerTirePressureUpdateJSON },  // ✅
     { rejectWithValue },
   ) => {
     try {
-      await api.tirePressure.tirePressuresUpdate(applicationId, body);
-      return { applicationId, ...body };
+      await api.tirePressure.tirePressuresUpdate(tirePressureId, body);  // ✅
+      return { tirePressureId, ...body };  // ✅
     } catch (e) {
       return rejectWithValue(apiErrMessage(e));
     }
@@ -184,16 +182,16 @@ export const updateTirePressureParams = createAsyncThunk(
 );
 
 // ─── Thunk: обновить запись в заявке ─────────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const updateTireEntryInApplication = createAsyncThunk(
   "tirePressure/updateEntry",
   async (
-    { tireId, applicationId, body }: { tireId: number; applicationId: number; body: SerializerTirePressureEntryUpdateJSON },
+    { tireId, tirePressureId, body }: { tireId: number; tirePressureId: number; body: SerializerTirePressureEntryUpdateJSON },  // ✅
     { rejectWithValue },
   ) => {
     try {
-      // 🔹 Бэкенд ждёт: /tire-pressure-entries/{tire_id}/{tire_pressure_id}
-      await api.tirePressureEntries.update(tireId, applicationId, body);
-      return { tireId, applicationId, ...body };
+      await api.tirePressureEntries.update(tireId, tirePressureId, body);  // ✅
+      return { tireId, tirePressureId, ...body };  // ✅
     } catch (e) {
       return rejectWithValue(apiErrMessage(e));
     }
@@ -201,15 +199,16 @@ export const updateTireEntryInApplication = createAsyncThunk(
 );
 
 // ─── Thunk: удалить шину из заявки ───────────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const removeTireEntryFromApplication = createAsyncThunk(
   "tirePressure/removeEntry",
   async (
-    { tireId, applicationId }: { tireId: number; applicationId: number },
+    { tireId, tirePressureId }: { tireId: number; tirePressureId: number },  // ✅
     { rejectWithValue, dispatch },
   ) => {
     try {
-      await api.tirePressureEntries.delete(tireId, applicationId);
-      await dispatch(fetchTirePressureDetail(applicationId));
+      await api.tirePressureEntries.delete(tireId, tirePressureId);  // ✅
+      await dispatch(fetchTirePressureDetail(tirePressureId));  // ✅
       await dispatch(fetchTirePressureCart());
       return tireId;
     } catch (e) {
@@ -219,12 +218,13 @@ export const removeTireEntryFromApplication = createAsyncThunk(
 );
 
 // ─── Thunk: сформировать заявку ──────────────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const formTirePressureApplication = createAsyncThunk(
   "tirePressure/form",
-  async (applicationId: number, { rejectWithValue, dispatch }) => {
+  async (tirePressureId: number, { rejectWithValue, dispatch }) => {  // ✅
     try {
-      await api.tirePressure.tirePressuresFormUpdate(applicationId);
-      await dispatch(fetchTirePressureDetail(applicationId));
+      await api.tirePressure.tirePressuresFormUpdate(tirePressureId);  // ✅
+      await dispatch(fetchTirePressureDetail(tirePressureId));  // ✅
       await dispatch(fetchTirePressureCart());
       await dispatch(fetchTirePressuresList());
       return true;
@@ -234,14 +234,16 @@ export const formTirePressureApplication = createAsyncThunk(
   },
 );
 
+// ─── Thunk: завершить/отклонить заявку ───────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const finishTirePressureApplication = createAsyncThunk(
   "tirePressure/finish",
   async (
-    { applicationId, status }: { applicationId: number; status: "завершён" | "отклонён" },  // ✅
+    { tirePressureId, status }: { tirePressureId: number; status: "завершён" | "отклонён" },  // ✅
     { rejectWithValue, dispatch },
   ) => {
     try {
-      await api.tirePressure.tirePressuresFinishUpdate(applicationId, { status });
+      await api.tirePressure.tirePressuresFinishUpdate(tirePressureId, { status });  // ✅
       await dispatch(fetchTirePressuresList());
       return true;
     } catch (e) {
@@ -251,13 +253,14 @@ export const finishTirePressureApplication = createAsyncThunk(
 );
 
 // ─── Thunk: удалить заявку ───────────────────────────
+// ✅ ИЗМЕНЕНО: applicationId → tirePressureId
 export const deleteTirePressureApplication = createAsyncThunk(
   "tirePressure/deleteApplication",
-  async (applicationId: number, { rejectWithValue, dispatch }) => {
+  async (tirePressureId: number, { rejectWithValue, dispatch }) => {  // ✅
     try {
-      await api.tirePressure.tirePressuresDelete(applicationId);
+      await api.tirePressure.tirePressuresDelete(tirePressureId);  // ✅
       await dispatch(fetchTirePressuresList());
-      return applicationId;
+      return tirePressureId;  // ✅
     } catch (e) {
       return rejectWithValue(apiErrMessage(e));
     }
@@ -345,7 +348,8 @@ const tirePressureSlice = createSlice({
       .addCase(updateTirePressureParams.pending, (state) => { state.applicationMutationLoading = true; })
       .addCase(updateTirePressureParams.fulfilled, (state, action) => {
         state.applicationMutationLoading = false;
-        if (state.detail?.application.tire_pressure_id === action.payload.applicationId) {
+        // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+        if (state.detail?.application.tire_pressure_id === action.payload.tirePressureId) {  // ✅
           state.detail.application = { ...state.detail.application, ...action.payload };
         }
       })
@@ -359,9 +363,10 @@ const tirePressureSlice = createSlice({
       .addCase(updateTireEntryInApplication.fulfilled, (state, action) => {
         const key = `entry-${action.payload.tireId}`;
         delete state.itemMutationLoading[key];
-        if (state.detail?.application.tire_pressure_id === action.payload.applicationId) {
+        // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+        if (state.detail?.application.tire_pressure_id === action.payload.tirePressureId) {  // ✅
           state.detail.entries = state.detail.entries.map((e) =>
-            e.tire_id === action.payload.tireId ? { ...e, coating_coefficient: action.payload.coating_coefficient } : e  // ✅
+            e.tire_id === action.payload.tireId ? { ...e, coating_coefficient: action.payload.coating_coefficient } : e
           );
         }
       })
@@ -394,15 +399,18 @@ const tirePressureSlice = createSlice({
 
       // finishTirePressureApplication
       .addCase(finishTirePressureApplication.pending, (state, action) => {
-        const key = `finish-${action.meta.arg.applicationId}`;
+        // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+        const key = `finish-${action.meta.arg.tirePressureId}`;  // ✅
         state.itemMutationLoading[key] = true;
       })
       .addCase(finishTirePressureApplication.fulfilled, (state, action) => {
-        const key = `finish-${action.meta.arg.applicationId}`;
+        // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+        const key = `finish-${action.meta.arg.tirePressureId}`;  // ✅
         delete state.itemMutationLoading[key];
       })
       .addCase(finishTirePressureApplication.rejected, (state, action) => {
-        const key = `finish-${action.meta.arg.applicationId}`;
+        // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+        const key = `finish-${action.meta.arg.tirePressureId}`;  // ✅
         if (key) delete state.itemMutationLoading[key];
       })
 

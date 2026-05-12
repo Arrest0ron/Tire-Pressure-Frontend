@@ -1,4 +1,4 @@
-// src/pages/ApplicationsPage/ApplicationsPage.tsx
+// src/pages/TirePressuresPage/TirePressuresPage.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spinner, Table, Button, Form } from "react-bootstrap";
@@ -9,7 +9,7 @@ import {
   setListFilters,
 } from "../../store/slices/tirePressureSlice";
 import { ROUTES } from "../../Routes";
-import "./ApplicationsPage.css";
+import "./TirePressuresPage.css";
 
 function statusLabel(s: string | undefined): string {
   const m: Record<string, string> = {
@@ -21,7 +21,7 @@ function statusLabel(s: string | undefined): string {
   return s ? (m[s] ?? s) : "—";
 }
 
-export default function ApplicationsPage() {
+export default function TirePressuresPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, isModerator } = useAppSelector((s) => s.user);
@@ -44,7 +44,7 @@ export default function ApplicationsPage() {
     void dispatch(fetchTirePressuresList());
   }, [dispatch]);
 
-  // ✅ Short polling: обновляем список каждые 4 секунды
+  // ✅ Short polling: обновляем список каждые 1 секунду
   useEffect(() => {
     if (!isAuthenticated) {
       navigate(ROUTES.SIGN_IN, { replace: true });
@@ -73,22 +73,22 @@ export default function ApplicationsPage() {
     void dispatch(fetchTirePressuresList());
   };
 
-  const goApp = (id: number | undefined) => {
-    if (id != null) navigate(`/application/${id}`);
+  const goToTirePressure = (id: number | undefined) => {
+    if (id != null) navigate(`/tire-pressure/${id}`);
   };
 
   if (!isAuthenticated) return null;
 
   return (
-    <div className="applications-page">
-      <div className="applications-page__inner">
-        <h1 className="applications-page__heading">
+    <div className="tire-pressures-page">
+      <div className="tire-pressures-page__inner">
+        <h1 className="tire-pressures-page__heading">
           {isModerator ? "Заявки (модератор)" : "Мои заявки"}
         </h1>
 
-        <section className="applications-page__filters">
-          <div className="applications-page__filter-row">
-            <Form.Group className="applications-page__fg">
+        <section className="tire-pressures-page__filters">
+          <div className="tire-pressures-page__filter-row">
+            <Form.Group className="tire-pressures-page__fg">
               <Form.Label>С даты</Form.Label>
               <Form.Control
                 type="date"
@@ -96,7 +96,7 @@ export default function ApplicationsPage() {
                 onChange={(e) => setDraftFrom(e.target.value)}
               />
             </Form.Group>
-            <Form.Group className="applications-page__fg">
+            <Form.Group className="tire-pressures-page__fg">
               <Form.Label>По дату</Form.Label>
               <Form.Control
                 type="date"
@@ -104,7 +104,7 @@ export default function ApplicationsPage() {
                 onChange={(e) => setDraftTo(e.target.value)}
               />
             </Form.Group>
-            <Form.Group className="applications-page__fg">
+            <Form.Group className="tire-pressures-page__fg">
               <Form.Label>Статус</Form.Label>
               <Form.Select
                 value={draftStatus}
@@ -118,7 +118,7 @@ export default function ApplicationsPage() {
               </Form.Select>
             </Form.Group>
             {isModerator ? (
-              <Form.Group className="applications-page__fg applications-page__fg--grow">
+              <Form.Group className="tire-pressures-page__fg tire-pressures-page__fg--grow">
                 <Form.Label>Создатель</Form.Label>
                 <Form.Control
                   type="text"
@@ -129,21 +129,21 @@ export default function ApplicationsPage() {
               </Form.Group>
             ) : null}
           </div>
-          <Button className="applications-page__apply" onClick={handleApplyFilters}>
+          <Button className="tire-pressures-page__apply" onClick={handleApplyFilters}>
             Применить фильтры
           </Button>
         </section>
 
-        {listError ? <div className="applications-page__error">{listError}</div> : null}
+        {listError ? <div className="tire-pressures-page__error">{listError}</div> : null}
 
         {listLoading && visible.length === 0 ? (
-          <div className="applications-page__loader">
+          <div className="tire-pressures-page__loader">
             <Spinner animation="border" />
           </div>
         ) : null}
 
-        <div className="applications-page__table-wrap">
-          <Table striped bordered hover responsive className="applications-page__table">
+        <div className="tire-pressures-page__table-wrap">
+          <Table striped bordered hover responsive className="tire-pressures-page__table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -166,8 +166,8 @@ export default function ApplicationsPage() {
                     <td>
                       <button
                         type="button"
-                        className="applications-page__linkish"
-                        onClick={() => goApp(id)}
+                        className="tire-pressures-page__linkish"
+                        onClick={() => goToTirePressure(id)}
                       >
                         {id}
                       </button>
@@ -193,7 +193,7 @@ export default function ApplicationsPage() {
                     {isModerator && (
                       <td>
                         {row.status === "сформирован" && id != null ? (
-                          <div className="applications-page__actions">
+                          <div className="tire-pressures-page__actions">
                             {/* ✅ Кнопка "Завершить" — отправляет русское значение "завершён" */}
                             <Button
                               size="sm"
@@ -203,8 +203,8 @@ export default function ApplicationsPage() {
                               onClick={() =>
                                 void dispatch(
                                   finishTirePressureApplication({
-                                    applicationId: id,
-                                    status: "завершён",  // ✅ Исправлено: было "completed"
+                                    tirePressureId: id,  // ✅ Исправлено: было applicationId
+                                    status: "завершён",
                                   }),
                                 )
                               }
@@ -219,8 +219,8 @@ export default function ApplicationsPage() {
                               onClick={() =>
                                 void dispatch(
                                   finishTirePressureApplication({
-                                    applicationId: id,
-                                    status: "отклонён",  // ✅ Исправлено: было "rejected"
+                                    tirePressureId: id,  // ✅ Исправлено: было applicationId
+                                    status: "отклонён",
                                   }),
                                 )
                               }
@@ -241,7 +241,7 @@ export default function ApplicationsPage() {
         </div>
 
         {!listLoading && visible.length === 0 ? (
-          <p className="applications-page__empty">Нет заявок по текущим условиям.</p>
+          <p className="tire-pressures-page__empty">Нет заявок по текущим условиям.</p>
         ) : null}
       </div>
     </div>

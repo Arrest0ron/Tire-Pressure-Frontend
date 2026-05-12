@@ -1,6 +1,6 @@
 /* src/pages/TiresPage/TiresPage.css */
 
-/* === Принудительный фон страницы (перебивает глобальные стили) === */
+/* === Глобальный фон страницы === */
 body, #root, .main-content {
   background-color: #f1f1f1 !important;
 }
@@ -20,7 +20,7 @@ body, #root, .main-content {
   min-height: 300px;
 }
 
-/* === Поиск: поле + кнопка. Ширина строго равна ширине сетки карточек === */
+/* === Поиск: поле + кнопка === */
 .header-controls {
   display: flex;
   align-items: center;
@@ -42,11 +42,13 @@ body, #root, .main-content {
   border: 2px solid #e8e8ec;
   background: #fff;
   width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .header-controls .form-control:focus {
   border-color: #ed1c24;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.15); /* ✅ Акцентное свечение */
 }
 
 .header-controls .btn-submit {
@@ -58,15 +60,20 @@ body, #root, .main-content {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
   flex-shrink: 0;
 }
 
 .header-controls .btn-submit:hover {
   background: #c7181e;
+  transform: translateY(-1px);
 }
 
-/* === Сетка карточек: 2 колонки, ширина 100% === */
+.header-controls .btn-submit:active {
+  transform: translateY(0);
+}
+
+/* === Сетка карточек === */
 .tires-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -78,10 +85,10 @@ body, #root, .main-content {
   box-sizing: border-box;
 }
 
-/* === Карточка: горизонтальная, фиксированная высота, ИДЕАЛЬНО БЕЛАЯ === */
+/* === Карточка: акцентные ховер-эффекты === */
 .tire-card {
   background: #ffffff;
-  border: 1px solid #6b6b6b;
+  border: 2px solid #6b6b6b;
   border-radius: 6px;
   display: flex;
   flex-direction: row;
@@ -90,11 +97,12 @@ body, #root, .main-content {
   text-decoration: none;
   color: inherit;
   box-sizing: border-box;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .tire-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #ed1c24; /* ✅ Акцентная рамка при наведении */
+  box-shadow: 0 4px 16px rgba(237, 28, 36, 0.15); /* ✅ Акцентная тень */
   transform: translateY(-2px);
 }
 
@@ -106,6 +114,7 @@ body, #root, .main-content {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid #e0e0e0;
 }
 
 .tire-left img {
@@ -125,7 +134,6 @@ body, #root, .main-content {
   overflow: hidden;
 }
 
-/* Сброс браузерных margin, чтобы элементы не наезжали друг на друга */
 .device-info > * {
   margin: 0 !important;
   box-sizing: border-box;
@@ -136,6 +144,11 @@ body, #root, .main-content {
   font-weight: 700;
   color: #0a5fac;
   line-height: 1.3;
+  transition: color 0.2s;
+}
+
+.tire-card:hover .tire-title {
+  color: #ed1c24; /* ✅ Заголовок меняет цвет при наведении на карточку */
 }
 
 .device-pressure {
@@ -155,7 +168,7 @@ body, #root, .main-content {
   text-overflow: ellipsis;
 }
 
-/* === Кнопка "Подробнее" — во всю ширину правой части карточки === */
+/* === Кнопка "Подробнее" — акцентные цвета === */
 .tire-btn {
   margin-top: auto;
   padding: 10px 0;
@@ -172,11 +185,16 @@ body, #root, .main-content {
   max-width: none !important;
   display: block !important;
   box-sizing: border-box;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .tire-btn:hover {
   background: #c7181e;
+  transform: translateY(-1px);
+}
+
+.tire-btn:active {
+  transform: translateY(0);
 }
 
 /* === Пустой результат === */
@@ -185,37 +203,39 @@ body, #root, .main-content {
   padding: 40px 20px;
   color: #666;
   background: #ffffff;
-  border: 1px solid #6b6b6b;
+  border: 2px solid #ed1c24; /* ✅ Акцентная рамка */
   border-radius: 6px;
   max-width: 400px;
   margin: 0 auto;
 }
 
 /* ============================================================ */
-/* ✅ ОБНОВЛЕНО: Секция CLIP-поиска (отступы + скрытие заголовка) */
+/* ✅ Секция CLIP-поиска: акцентные цвета */
 /* ============================================================ */
 
-/* --- Скрываем заголовок секции (по требованию) --- */
 .clip-search-section__heading {
   display: none;
 }
 
-/* --- Контейнер панели управления: больше воздуха --- */
 .clip-search-section__panel {
   display: flex;
   align-items: flex-start;
-  gap: 24px;              /* ✅ Увеличенный отступ между превью и кнопками */
-  padding: 20px;          /* ✅ Внутренний отступ панели */
+  gap: 24px;
+  padding: 20px;
   background: #fff;
-  border: 1px solid #6b6b6b;
+  border: 2px solid #6b6b6b;
   border-radius: 8px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+  transition: border-color 0.2s;
 }
 
-/* --- Превью загруженного фото: отступы вокруг --- */
+.clip-search-section__panel:focus-within {
+  border-color: #ed1c24; /* ✅ Акцентная рамка при фокусе внутри */
+}
+
 .clip-search-section__preview-wrap {
-  margin: 8px 0;          /* ✅ Вертикальный отступ */
+  margin: 8px 0;
 }
 
 .clip-search-section__preview-image {
@@ -227,6 +247,11 @@ body, #root, .main-content {
   flex-shrink: 0;
   background: #f5f5f5;
   display: block;
+  transition: border-color 0.2s;
+}
+
+.clip-search-section__preview-image:hover {
+  border-color: #ed1c24; /* ✅ Акцент при наведении на превью */
 }
 
 .clip-search-section__placeholder-image {
@@ -243,38 +268,81 @@ body, #root, .main-content {
   font-size: 13px;
   text-align: center;
   padding: 5px;
-  margin: 8px 0;          /* ✅ Вертикальный отступ для плейсхолдера */
+  margin: 8px 0;
+  transition: border-color 0.2s;
 }
 
-/* --- Панель кнопок: вертикальные отступы --- */
+.clip-search-section__placeholder-image:hover {
+  border-color: #ed1c24;
+  color: #ed1c24;
+}
+
 .clip-search-section__action-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;              /* ✅ Отступ между кнопками */
+  gap: 12px;
   min-width: 180px;
-  margin: 4px 0;          /* ✅ Небольшой отступ сверху/снизу */
+  margin: 4px 0;
 }
 
-/* --- Кнопки: больше воздуха внутри и вокруг --- */
+/* === Кнопки загрузки: акцентные цвета === */
 .clip-search-section__btn-upload,
 .clip-search-section__action-panel .action-btn {
-  padding: 14px 20px;     /* ✅ Увеличенный внутренний отступ */
+  padding: 14px 20px;
   font-size: 14px;
   font-weight: 600;
-  margin: 2px 0;          /* ✅ Микро-отступы между кнопками */
+  margin: 2px 0;
+  background: #ed1c24;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
 
-/* --- Прогресс-бар: отступы --- */
+.clip-search-section__btn-upload:hover,
+.clip-search-section__action-panel .action-btn:hover {
+  background: #c7181e;
+  transform: translateY(-1px);
+}
+
+.clip-search-section__btn-upload:active,
+.clip-search-section__action-panel .action-btn:active {
+  transform: translateY(0);
+}
+
+.clip-search-section__btn-upload:disabled,
+.clip-search-section__action-panel .action-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Кнопка "Сбросить" — вторичный стиль */
+.clip-search-section__action-panel .btn-outline-danger {
+  background: #fff;
+  color: #ed1c24;
+  border: 2px solid #ed1c24;
+}
+
+.clip-search-section__action-panel .btn-outline-danger:hover {
+  background: #ed1c24;
+  color: #fff;
+}
+
 .clip-search-section__progress {
   margin: 4px 0;
 }
 
-/* --- Скрытый input file --- */
+.clip-search-section__progress .progress-bar {
+  background: #ed1c24; /* ✅ Акцентный прогресс-бар */
+}
+
 .clip-search-section__file-input {
   display: none;
 }
 
-/* --- Адаптив: на мобильных стек вертикальный --- */
+/* === Адаптив для CLIP === */
 @media (max-width: 576px) {
   .clip-search-section__panel {
     flex-direction: column;
@@ -287,7 +355,8 @@ body, #root, .main-content {
     align-items: center;
   }
 }
-/* --- Контейнер результатов поиска (аналог .tires-grid) --- */
+
+/* === Результаты поиска === */
 .tires-page__clip-results {
   width: 100%;
   max-width: 1160px;
@@ -304,31 +373,31 @@ body, #root, .main-content {
   gap: 20px;
 }
 
-/* --- Строка результата: копируем стиль .tire-card --- */
+/* === Строка результата: акцентные ховер-эффекты === */
 .tire-row,
 .clip-result-row {
   background: #ffffff;
-  border: 1px solid #6b6b6b;
+  border: 2px solid #6b6b6b;
   border-radius: 6px;
   display: flex;
   flex-direction: row;
-  height: 220px;           /* ✅ Та же высота, что у .tire-card */
+  height: 220px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   box-sizing: border-box;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   width: 100%;
 }
 
 .clip-result-row:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #ed1c24; /* ✅ Акцентная рамка */
+  box-shadow: 0 4px 16px rgba(237, 28, 36, 0.15);
   transform: translateY(-2px);
 }
 
-/* --- Изображение в строке результата (аналог .tire-left) --- */
 .clip-result-row .row-image {
-  width: 160px;            /* ✅ Та же ширина, что у .tire-left */
+  width: 160px;
   height: 100%;
   object-fit: cover;
   flex-shrink: 0;
@@ -336,7 +405,6 @@ body, #root, .main-content {
   display: block;
 }
 
-/* --- Контент: название + описания (аналог .device-info) --- */
 .clip-result-row .row-content {
   flex: 1;
   padding: 16px;
@@ -356,6 +424,11 @@ body, #root, .main-content {
   font-weight: 700;
   color: #0a5fac;
   line-height: 1.3;
+  transition: color 0.2s;
+}
+
+.clip-result-row:hover .row-content h5 {
+  color: #ed1c24; /* ✅ Заголовок меняет цвет при наведении */
 }
 
 .clip-result-row__en {
@@ -380,7 +453,7 @@ body, #root, .main-content {
   text-overflow: ellipsis;
 }
 
-/* --- Блок со статистикой (сходство) --- */
+/* === Блок со статистикой (сходство) — акцентные цвета === */
 .clip-result-row .row-stats {
   width: 140px;
   padding: 16px;
@@ -395,7 +468,7 @@ body, #root, .main-content {
 
 .clip-result-row .similarity-value {
   font-weight: 700;
-  color: #ed1c24;          /* ✅ Акцентный цвет как в теме */
+  color: #ed1c24;
   font-size: 18px;
   display: block;
   margin-top: 4px;
@@ -413,31 +486,28 @@ body, #root, .main-content {
 
 .tires-page__clip-search.clip-search-section {
   width: 100%;
-  max-width: 1160px;      /* ✅ Как у .tires-grid */
-  margin-left: auto;      /* ✅ Центрирование */
+  max-width: 1160px;
+  margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
-  padding: 0 20px;        /* ✅ Отступы по краям для мобильных */
+  padding: 0 20px;
 }
 
-/* 🔹 Панель внутри секции: убираем лишние отступы, чтобы контент был в одной линии с карточками */
 .tires-page__clip-search.clip-search-section .clip-search-section__panel {
   margin-left: 0;
   margin-right: 0;
-  padding: 20px;          /* Внутренний отступ панели */
+  padding: 20px;
 }
 
-/* 🔹 Результаты поиска: тоже центрируем и ограничиваем ширину */
 .tires-page__clip-results {
   width: 100%;
   max-width: 1160px;
   margin-left: auto;
   margin-right: auto;
-  padding: 0 20px;        /* Отступы по краям */
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
-/* 🔹 Адаптив: на мобильных — на всю ширину с отступами */
 @media (max-width: 1200px) {
   .tires-page__clip-search.clip-search-section,
   .tires-page__clip-results {

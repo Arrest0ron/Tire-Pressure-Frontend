@@ -23,7 +23,7 @@ export default function CartRow() {
       })
       .catch(e => console.error("❌ [CartRow] Ошибка в thunk:", e));
       
-  }, [dispatch, isAuthenticated]); // ← Перезапускается при смене isAuthenticated
+  }, [dispatch, isAuthenticated]);
 
   // 🔹 Слушаем кастомное событие обновления корзины (от TireCard после добавления)
   useEffect(() => {
@@ -45,10 +45,13 @@ export default function CartRow() {
   // ✅ Ключевое исправление: id=0 считаем "нет черновика", только id>0 — валидный
   const validId = (cart?.id != null && cart?.id > 0) ? cart?.id : undefined;
   const hasDraft = isAuthenticated && Boolean(validId);
-  const applicationId = validId;
+  
+  // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+  const tirePressureId = validId;
   
   // 🔹 Финальное условие: все 4 фактора должны быть истинными
-  const isActive = isAuthenticated && hasDraft && count > 0 && applicationId != null;
+  // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+  const isActive = isAuthenticated && hasDraft && count > 0 && tirePressureId != null;
 
   // 🔥 Отладочный вывод ВСЕХ условий в консоль
   useEffect(() => {
@@ -58,10 +61,11 @@ export default function CartRow() {
     console.log("  count (tires_count):", count);
     console.log("  validId (id>0?):", validId);
     console.log("  hasDraft:", hasDraft);
-    console.log("  applicationId:", applicationId);
+    // ✅ ИЗМЕНЕНО: applicationId → tirePressureId
+    console.log("  tirePressureId:", tirePressureId);
     console.log("  ✅ isActive:", isActive);
     console.groupEnd();
-  }, [isAuthenticated, cart, count, validId, hasDraft, applicationId, isActive]);
+  }, [isAuthenticated, cart, count, validId, hasDraft, tirePressureId, isActive]);
 
   const inner = (
     <>
@@ -74,10 +78,11 @@ export default function CartRow() {
 
   // 🔹 Рендер активной ссылки
   if (isActive) {
-    console.log("🟢 Рендер: АКТИВНАЯ ссылка → /tire-pressure/", applicationId);
+    // ✅ ИЗМЕНЕНО: applicationId → tirePressureId в логе и пути
+    console.log("🟢 Рендер: АКТИВНАЯ ссылка → /tire-pressure/", tirePressureId);
     return (
       <div className="cart-badge" role="navigation" aria-label="Перейти к заявке">
-        <Link to={`/tire-pressure/${applicationId}`} className="cart-link">
+        <Link to={`/tire-pressure/${tirePressureId}`} className="cart-link">
           {inner}
         </Link>
       </div>

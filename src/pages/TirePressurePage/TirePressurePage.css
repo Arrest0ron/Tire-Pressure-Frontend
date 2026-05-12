@@ -1,4 +1,4 @@
-/* src/pages/ApplicationPage/ApplicationPage.css */
+/* src/pages/TirePressurePage/TirePressurePage.css */
 
 /* === Глобальный фон страницы === */
 body, #root, .main-content {
@@ -12,34 +12,33 @@ body, #root, .main-content {
   margin: 0;
 }
 
-/* === Контейнер заявки — добавь/замени эти строки === */
-.application-page {
+/* === Контейнер заявки === */
+.tire-pressure-page {
   width: 100%;
   box-sizing: border-box;
-  display: flex;           /* ✅ Включаем флекс */
-  justify-content: center; /* ✅ Центрируем детей по горизонтали */
+  display: flex;
+  justify-content: center;
 }
 
-.application-detail {
+.tire-pressure-detail {
   background: #ffffff;
   border: 1px solid #6b6b6b;
   border-radius: 6px;
   padding: 24px;
-  width: 100%;             /* ✅ Занимает доступную ширину */
-  max-width: 1200px;       /* ✅ Но не шире 1200px */
-  margin: 0 auto;          /* ✅ Дублируем для надёжности */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   box-sizing: border-box;
 }
 
-
 /* === Заголовок заявки === */
-.application-detail__header-card {
+.tire-pressure-detail__header-card {
   padding-bottom: 16px;
   border-bottom: 1px solid #eee;
   margin-bottom: 24px;
 }
 
-.application-detail__title {
+.tire-pressure-detail__title {
   font-size: 20px;
   font-weight: 700;
   color: #0a5fac;
@@ -47,7 +46,7 @@ body, #root, .main-content {
   word-wrap: break-word;
 }
 
-.application-detail__info {
+.tire-pressure-detail__info {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 20px;
@@ -55,11 +54,11 @@ body, #root, .main-content {
   color: #333;
 }
 
-.application-detail__info-item {
+.tire-pressure-detail__info-item {
   min-width: 150px;
 }
 
-.application-detail__info-item strong {
+.tire-pressure-detail__info-item strong {
   color: #666;
   margin-right: 4px;
 }
@@ -151,11 +150,11 @@ body, #root, .main-content {
   text-align: right;
 }
 
-/* === Обёртка таблицы — тоже центрируем === */
-.app-table-wrapper {
+/* === Обёртка таблицы === */
+.tire-pressure-table-wrapper {
   width: 100%;
   max-width: 100%;
-  margin-left: auto;   /* ✅ Явное центрирование */
+  margin-left: auto;
   margin-right: auto;
   overflow-x: auto;
   margin-bottom: 24px;
@@ -164,19 +163,19 @@ body, #root, .main-content {
   box-sizing: border-box;
 }
 
-.app-table {
+.tire-pressure-table {
   width: 100%;
-  min-width: 700px; /* ✅ Мин. ширина для читаемости */
+  min-width: 700px;
   border-collapse: collapse;
   font-size: 14px;
   background: #fff;
-  table-layout: auto; /* ✅ Убрали fixed — пусть браузер сам распределяет */
+  table-layout: auto;
   box-sizing: border-box;
-  display: table; /* ✅ Гарантирует правильное поведение */
+  display: table;
 }
 
-.app-table th,
-.app-table td {
+.tire-pressure-table th,
+.tire-pressure-table td {
   padding: 10px 12px;
   border-bottom: 1px solid #eee;
   vertical-align: middle;
@@ -184,7 +183,7 @@ body, #root, .main-content {
   text-overflow: ellipsis;
 }
 
-.app-table th {
+.tire-pressure-table th {
   background: #fafafa;
   text-align: left;
   font-weight: 600;
@@ -193,19 +192,19 @@ body, #root, .main-content {
   white-space: nowrap;
 }
 
-.app-table tr:hover {
+.tire-pressure-table tr:hover {
   background: #f9f9f9;
 }
 
-/* === Ширина колонок — только проценты (без px!) === */
-.app-table__col-photo { width: 8%; min-width: 60px; text-align: center; }
-.app-table__col-name { width: 28%; min-width: 140px; }
-.app-table__col-coeff { width: 18%; min-width: 100px; font-size: 13px; }
-.app-table__col-coating { width: 16%; min-width: 110px; }
-.app-table__col-pressure { width: 12%; min-width: 70px; text-align: right; white-space: nowrap; }
-.app-table__col-actions { width: 18%; min-width: 130px; text-align: center; }
+/* === Ширина колонок === */
+.tire-pressure-table__col-photo { width: 8%; min-width: 60px; text-align: center; }
+.tire-pressure-table__col-name { width: 28%; min-width: 140px; }
+.tire-pressure-table__col-coeff { width: 18%; min-width: 100px; font-size: 13px; }
+.tire-pressure-table__col-coating { width: 16%; min-width: 110px; }
+.tire-pressure-table__col-pressure { width: 12%; min-width: 70px; text-align: right; white-space: nowrap; }
+.tire-pressure-table__col-actions { width: 18%; min-width: 130px; text-align: center; }
 
-.app-table__col-photo img {
+.tire-pressure-table__col-photo img {
   width: 45px;
   height: 45px;
   object-fit: cover;
@@ -215,12 +214,12 @@ body, #root, .main-content {
   margin: 0 auto;
 }
 
-.app-table__col-coeff small {
+.tire-pressure-table__col-coeff small {
   display: block;
   color: #666;
 }
 
-.app-table__col-coating .form-control {
+.tire-pressure-table__col-coating .form-control {
   width: 100%;
   max-width: 85px;
   padding: 6px 8px;
@@ -228,28 +227,46 @@ body, #root, .main-content {
 }
 
 /* Кнопки в действиях */
-.app-table__col-actions .btn {
+.tire-pressure-table__col-actions .btn {
   padding: 4px 8px;
   font-size: 12px;
   white-space: nowrap;
 }
 
-.app-table__col-actions .btn + .btn {
+.tire-pressure-table__col-actions .btn + .btn {
   margin-left: 4px;
 }
 
-/* === Кнопки действий === */
-.application-page__actions,
-.application-page__actions--top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: flex-end;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+/* === Кнопки действий (КРАСНЫЙ ЦВЕТ) === */
+.tire-pressure-page__actions .btn,
+.tire-pressure-page__actions--top .btn,
+.tire-pressure-page .btn-primary,
+.tire-pressure-page .btn-success,
+.tire-pressure-page .btn-outline-primary,
+.tire-pressure-page .btn-outline-danger {
+  background-color: #ed1c24 !important;
+  border-color: #ed1c24 !important;
+  color: #fff !important;
 }
 
-.application-page__actions--top {
+.tire-pressure-page__actions .btn:hover,
+.tire-pressure-page__actions--top .btn:hover,
+.tire-pressure-page .btn-primary:hover,
+.tire-pressure-page .btn-success:hover,
+.tire-pressure-page .btn-outline-primary:hover,
+.tire-pressure-page .btn-outline-danger:hover {
+  background-color: #c7181e !important;
+  border-color: #c7181e !important;
+}
+
+/* Кнопка "На главную" остаётся серой */
+.tire-pressure-page .btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.tire-pressure-page__actions--top {
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid #eee;
@@ -257,22 +274,22 @@ body, #root, .main-content {
   justify-content: flex-start;
 }
 
-.application-page__delete-btn {
+.tire-pressure-page__delete-btn {
   background: #dc3545;
   margin-right: auto;
 }
 
-.application-page__delete-btn:hover {
+.tire-pressure-page__delete-btn:hover {
   background: #c82333;
 }
 
 /* === Адаптив === */
 @media (max-width: 768px) {
-  .application-detail {
+  .tire-pressure-detail {
     padding: 16px;
   }
   
-  .application-detail__info {
+  .tire-pressure-detail__info {
     flex-direction: column;
     gap: 8px;
   }
@@ -290,48 +307,48 @@ body, #root, .main-content {
     max-width: 100%;
   }
   
-  .application-page__actions,
-  .application-page__actions--top {
+  .tire-pressure-page__actions,
+  .tire-pressure-page__actions--top {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .application-page__actions .btn,
-  .application-page__actions--top .btn {
+  .tire-pressure-page__actions .btn,
+  .tire-pressure-page__actions--top .btn {
     width: 100%;
     justify-content: center;
   }
   
-  .application-page__delete-btn {
+  .tire-pressure-page__delete-btn {
     margin-right: 0;
     order: 2;
   }
   
-  .app-table th,
-  .app-table td {
+  .tire-pressure-table th,
+  .tire-pressure-table td {
     padding: 8px 10px;
     font-size: 13px;
   }
   
-  .app-table__col-coeff small {
+  .tire-pressure-table__col-coeff small {
     display: inline;
   }
   
   /* На мобильных — ещё более компактные колонки */
-  .app-table__col-photo { width: 10%; min-width: 50px; }
-  .app-table__col-name { width: 30%; }
-  .app-table__col-coeff { width: 20%; font-size: 12px; }
-  .app-table__col-coating { width: 18%; }
-  .app-table__col-pressure { width: 12%; }
-  .app-table__col-actions { width: 10%; min-width: 90px; }
-  .app-table__col-actions .btn {
+  .tire-pressure-table__col-photo { width: 10%; min-width: 50px; }
+  .tire-pressure-table__col-name { width: 30%; }
+  .tire-pressure-table__col-coeff { width: 20%; font-size: 12px; }
+  .tire-pressure-table__col-coating { width: 18%; }
+  .tire-pressure-table__col-pressure { width: 12%; }
+  .tire-pressure-table__col-actions { width: 10%; min-width: 90px; }
+  .tire-pressure-table__col-actions .btn {
     padding: 3px 6px;
     font-size: 11px;
   }
 }
 
 /* === Сообщение "не найдено" === */
-.application-not-found {
+.tire-pressure-not-found {
   text-align: center;
   padding: 40px 20px;
   color: #666;

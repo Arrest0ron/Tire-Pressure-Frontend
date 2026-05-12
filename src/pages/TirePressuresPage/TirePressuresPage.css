@@ -1,5 +1,5 @@
-/* src/pages/ApplicationsPage/ApplicationsPage.css */
-.applications-page__inner {
+/* src/pages/TirePressuresPage/TirePressuresPage.css */
+.tire-pressures-page__inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
@@ -8,7 +8,7 @@
   border-radius: 8px;
 }
 
-.applications-page__heading {
+.tire-pressures-page__heading {
   font-size: 20px;
   font-weight: 700;
   margin: 0 0 24px;
@@ -16,7 +16,7 @@
 }
 
 /* === Фильтры === */
-.applications-page__filters {
+.tire-pressures-page__filters {
   background: #fafafa;
   border: 1px solid #e8e8ec;
   border-radius: 6px;
@@ -24,48 +24,48 @@
   margin-bottom: 24px;
 }
 
-.applications-page__filter-row {
+.tire-pressures-page__filter-row {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
 }
 
-.applications-page__fg {
+.tire-pressures-page__fg {
   flex: 1 1 180px;
   min-width: 160px;
 }
 
-.applications-page__fg--grow {
+.tire-pressures-page__fg--grow {
   flex: 2 1 250px;
 }
 
-.applications-page__apply {
+.tire-pressures-page__apply {
   margin-top: 16px;
   background: #ed1c24;
   border: none;
 }
 
-.applications-page__apply:hover {
+.tire-pressures-page__apply:hover {
   background: #c7181e;
 }
 
 /* === Таблица === */
-.applications-page__table-wrap {
+.tire-pressures-page__table-wrap {
   overflow-x: auto;
 }
 
-.applications-page__table th {
+.tire-pressures-page__table th {
   background: #fafafa;
   white-space: nowrap;
   vertical-align: middle;
 }
 
-.applications-page__table td {
+.tire-pressures-page__table td {
   vertical-align: middle;
 }
 
-.applications-page__linkish {
+.tire-pressures-page__linkish {
   background: none;
   border: none;
   color: #0a5fac;
@@ -75,17 +75,17 @@
   text-decoration: underline;
 }
 
-.applications-page__linkish:hover {
+.tire-pressures-page__linkish:hover {
   color: #c7181e;
 }
 
-.applications-page__actions {
+.tire-pressures-page__actions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.applications-page__error {
+.tire-pressures-page__error {
   color: #dc3545;
   background: #f8d7da;
   padding: 12px;
@@ -93,13 +93,13 @@
   margin-bottom: 16px;
 }
 
-.applications-page__loader {
+.tire-pressures-page__loader {
   display: flex;
   justify-content: center;
   padding: 40px;
 }
 
-.applications-page__empty {
+.tire-pressures-page__empty {
   text-align: center;
   padding: 24px;
   color: #666;
@@ -109,13 +109,13 @@
 
 /* Адаптив */
 @media (max-width: 768px) {
-  .applications-page__filter-row {
+  .tire-pressures-page__filter-row {
     flex-direction: column;
   }
-  .applications-page__fg {
+  .tire-pressures-page__fg {
     width: 100%;
   }
-  .applications-page__actions {
+  .tire-pressures-page__actions {
     flex-direction: column;
   }
 }

@@ -8,7 +8,7 @@ import logo from "../../assets/logo.jpg";
 import "./AppHeader.css";
 
 export default function AppHeader() {
-  const { isAuthenticated, login } = useAppSelector((s) => s.user); // ✅ login вместо username
+  const { isAuthenticated, login } = useAppSelector((s) => s.user);
   const dispatch = useAppDispatch();
 
   // 🔹 Переключение мобильного меню (как в примере)
@@ -53,15 +53,15 @@ export default function AppHeader() {
           
           {isAuthenticated ? (
             <>
+              {/* ✅ ИЗМЕНЕНО: ROUTES.APPLICATIONS → ROUTES.TIRE_PRESSURES */}
               <NavLink 
-                to={ROUTES.APPLICATIONS} 
+                to={ROUTES.TIRE_PRESSURES}
                 className="app-header__link"
                 onClick={handleMenuLinkClick}
               >
                 Заявки
               </NavLink>
               
-              {/* ✅ ИСПРАВЛЕНО: login вместо username */}
               <span className="app-header__username" title={login}>
                 {login?.slice(0, 16)}{login && login.length > 16 ? "…" : ""}
               </span>
@@ -121,15 +121,15 @@ export default function AppHeader() {
             
             {isAuthenticated ? (
               <>
+                {/* ✅ ИЗМЕНЕНО: ROUTES.APPLICATIONS → ROUTES.TIRE_PRESSURES */}
                 <NavLink 
-                  to={ROUTES.APPLICATIONS} 
+                  to={ROUTES.TIRE_PRESSURES}
                   className="app-header__link"
                   onClick={handleMenuLinkClick}
                 >
                   Заявки
                 </NavLink>
                 
-                {/* ✅ ИСПРАВЛЕНО: login вместо username */}
                 <span className="app-header__username app-header__username--mobile">
                   {login}
                 </span>
