@@ -299,8 +299,7 @@ const tirePressureSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(logoutUser.fulfilled, () => buildInitialState())
-      .addCase(logoutUser.rejected, () => buildInitialState())
+      .addCase(logoutUser, () => buildInitialState())
 
       // fetchTirePressureCart
       .addCase(fetchTirePressureCart.pending, (state) => { state.cartLoading = true; })

@@ -359,3 +359,19 @@ body, #root, .main-content {
   max-width: 400px;
   margin: 0 auto;
 }
+
+/* src/pages/TirePressuresPage/TirePressuresPage.css */
+
+/* === Счётчик результатов === */
+.tire-pressures-page__results-count {
+  text-align: right;
+  padding: 8px 0 16px;
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.tire-pressures-page__results-count strong {
+  color: #ed1c24; /* ✅ Акцентный цвет */
+  font-weight: 700;
+}

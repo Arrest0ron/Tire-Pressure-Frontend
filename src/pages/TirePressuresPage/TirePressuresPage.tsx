@@ -21,6 +21,20 @@ function statusLabel(s: string | undefined): string {
   return s ? (m[s] ?? s) : "—";
 }
 
+// ✅ Форматирование даты в РФ-стиле: ДД.ММ.ГГГГ
+function formatRuDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "—";
+  try {
+    return new Date(dateStr).toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
 export default function TirePressuresPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -30,15 +44,19 @@ export default function TirePressuresPage() {
   );
 
   const [creatorFilter, setCreatorFilter] = useState("");
-  const [draftFrom, setDraftFrom] = useState(filters.fromDate);
-  const [draftTo, setDraftTo] = useState(filters.toDate);
-  const [draftStatus, setDraftStatus] = useState(filters.status);
+  const [themeFilter, setThemeFilter] = useState(""); // ✅ Поиск по теме
+  
+  // ✅ Дефолтные фильтры: сегодня
+  const today = new Date().toISOString().split("T")[0];
+  const [draftFrom, setDraftFrom] = useState(filters.fromDate || today);
+  const [draftTo, setDraftTo] = useState(filters.toDate || today);
+  const [draftStatus, setDraftStatus] = useState(filters.status || "");
 
   useEffect(() => {
-    setDraftFrom(filters.fromDate);
-    setDraftTo(filters.toDate);
-    setDraftStatus(filters.status);
-  }, [filters.fromDate, filters.toDate, filters.status]);
+    setDraftFrom(filters.fromDate || today);
+    setDraftTo(filters.toDate || today);
+    setDraftStatus(filters.status || "");
+  }, [filters.fromDate, filters.toDate, filters.status, today]);
 
   const load = useCallback(() => {
     void dispatch(fetchTirePressuresList());
@@ -55,19 +73,34 @@ export default function TirePressuresPage() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, navigate, load]);
 
-  // ✅ Фронтенд-фильтр по создателю (только для модератора)
+  // ✅ Фильтрация: бэкенд (дата/статус) + фронтенд (создатель + тема)
   const visible = useMemo(() => {
-    const q = creatorFilter.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((a) => (a.creator_login ?? "").toLowerCase().includes(q));
-  }, [list, creatorFilter]);
+    let result = list;
+
+    if (isModerator && creatorFilter.trim()) {
+      const q = creatorFilter.trim().toLowerCase();
+      result = result.filter((a) => (a.creator_login ?? "").toLowerCase().includes(q));
+    }
+
+    if (themeFilter.trim()) {
+      const q = themeFilter.trim().toLowerCase();
+      result = result.filter((a) => {
+        return (
+          (a.creator_login ?? "").toLowerCase().includes(q) ||
+          (a.status ?? "").toLowerCase().includes(q)
+        );
+      });
+    }
+
+    return result;
+  }, [list, creatorFilter, themeFilter, isModerator]);
 
   const handleApplyFilters = () => {
     dispatch(
       setListFilters({
-        fromDate: draftFrom,
-        toDate: draftTo,
-        status: draftStatus,
+        fromDate: draftFrom || undefined,
+        toDate: draftTo || undefined,
+        status: draftStatus || undefined,
       }),
     );
     void dispatch(fetchTirePressuresList());
@@ -117,6 +150,17 @@ export default function TirePressuresPage() {
                 <option value="отклонен">Отклонена</option>
               </Form.Select>
             </Form.Group>
+            
+            <Form.Group className="tire-pressures-page__fg">
+              <Form.Label>Тема</Form.Label>
+              <Form.Control
+                type="text"
+                value={themeFilter}
+                onChange={(e) => setThemeFilter(e.target.value)}
+                placeholder="Название шины или описание"
+              />
+            </Form.Group>
+            
             {isModerator ? (
               <Form.Group className="tire-pressures-page__fg tire-pressures-page__fg--grow">
                 <Form.Label>Создатель</Form.Label>
@@ -152,6 +196,7 @@ export default function TirePressuresPage() {
                 <th>Создана</th>
                 <th>Формирование</th>
                 <th>Завершение</th>
+                <th className="text-center">Рассчитано</th>
                 {isModerator && <th>Модератор</th>}
                 {isModerator && <th>Действия</th>}
               </tr>
@@ -174,27 +219,20 @@ export default function TirePressuresPage() {
                     </td>
                     <td>{statusLabel(row.status)}</td>
                     <td>{row.creator_login ?? "—"}</td>
-                    <td>
-                      {row.date_create
-                        ? new Date(row.date_create).toLocaleString("ru-RU")
-                        : "—"}
+                    <td>{formatRuDate(row.date_create)}</td>
+                    <td>{formatRuDate(row.date_formed)}</td>
+                    <td>{formatRuDate(row.date_completed)}</td>
+                    
+                    {/* ✅ Серый текст, без бейджа */}
+                    <td className="text-center text-muted">
+                      {row.tire_entries_count ?? 0}
                     </td>
-                    <td>
-                      {row.date_formed
-                        ? new Date(row.date_formed).toLocaleDateString("ru-RU")
-                        : "—"}
-                    </td>
-                    <td>
-                      {row.date_completed
-                        ? new Date(row.date_completed).toLocaleString("ru-RU")
-                        : "—"}
-                    </td>
+                    
                     {isModerator && <td>{row.moderator_login ?? "—"}</td>}
                     {isModerator && (
                       <td>
                         {row.status === "сформирован" && id != null ? (
                           <div className="tire-pressures-page__actions">
-                            {/* ✅ Кнопка "Завершить" — отправляет русское значение "завершён" */}
                             <Button
                               size="sm"
                               variant="success"
@@ -203,15 +241,14 @@ export default function TirePressuresPage() {
                               onClick={() =>
                                 void dispatch(
                                   finishTirePressureApplication({
-                                    tirePressureId: id,  // ✅ Исправлено: было applicationId
+                                    tirePressureId: id,
                                     status: "завершён",
                                   }),
                                 )
                               }
                             >
-                              ✅ Завершить
+                              Завершить
                             </Button>
-                            {/* ✅ Кнопка "Отклонить" — отправляет русское значение "отклонён" */}
                             <Button
                               size="sm"
                               variant="danger"
@@ -219,13 +256,13 @@ export default function TirePressuresPage() {
                               onClick={() =>
                                 void dispatch(
                                   finishTirePressureApplication({
-                                    tirePressureId: id,  // ✅ Исправлено: было applicationId
+                                    tirePressureId: id,
                                     status: "отклонён",
                                   }),
                                 )
                               }
                             >
-                              ❌ Отклонить
+                              Отклонить
                             </Button>
                           </div>
                         ) : (

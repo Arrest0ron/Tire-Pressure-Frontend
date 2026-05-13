@@ -1,57 +1,64 @@
-// src/pages/SignInPage/SignInPage.tsx (DEBUG-версия)
+// src/pages/SignInPage/SignInPage.tsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
+import axios from "axios"; // ✅ Прямой импорт, без api.*
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { loginUser } from "../../store/slices/userSlice";
+import { setUser, setUserLoading, setUserError, logoutUser } from "../../store/slices/userSlice"; // ✅ Только синхронные экшены
 import { ROUTES } from "../../Routes";
 import "./SignInPage.css";
 
 export default function SignInPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useAppSelector((s) => s.user);
+  const { isAuthenticated, loading, error } = useAppSelector((s) => s.user);
   const [form, setForm] = useState({ login: "", password: "" });
 
-  // 🔹 Лог редиректа
+  // 🔹 Редирект если уже авторизован
   useEffect(() => {
-    console.log("🔍 [SignInPage] isAuthenticated:", isAuthenticated);
     if (isAuthenticated) {
-      console.log("🔄 [SignInPage] Редирект на", ROUTES.TIRES);
       navigate(ROUTES.TIRES, { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("🔹 [handleSubmit] Кнопка нажата");
-    console.log("🔹 [handleSubmit] Form data:", form);
     
-    // Проверка 1: не пустые ли поля
+    // Валидация
     if (!form.login || !form.password) {
-      console.log("🚫 [handleSubmit] Блокировка: пустые поля");
+      dispatch(setUserError("Заполните все поля"));
       return;
     }
-    console.log("✅ [handleSubmit] Валидация пройдена");
 
-    // Проверка 2: не заблокирована ли кнопка (на всякий случай)
-    if (loading) {
-      console.log("🚫 [handleSubmit] Блокировка: loading === true");
-      return;
-    }
+    dispatch(setUserLoading(true));
+    dispatch(setUserError(null));
 
     try {
-      console.log("📤 [handleSubmit] Вызываю dispatch(loginUser)...");
-      const result = await dispatch(loginUser(form)).unwrap();
-      console.log("✅ [handleSubmit] Успех! Результат:", result);
+      // ✅ ПРЯМОЙ AXIOS — не через api.users, не через thunk
+      const response = await axios.post("/api/users/signin", {
+        login: form.login,
+        password: form.password,
+      }, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const { token, user } = response.data;
+      
+      if (token) {
+        localStorage.setItem("token", token);
+        // ✅ Обновляем Redux синхронным экшеном
+        dispatch(setUser({ login: form.login, token }));
+      }
+
       navigate(ROUTES.TIRES, { replace: true });
-    } catch (err) {
-      console.log("❌ [handleSubmit] Ошибка в catch:", err);
+      
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.response?.data?.error || "Ошибка входа";
+      dispatch(setUserError(msg));
+    } finally {
+      dispatch(setUserLoading(false));
     }
   };
-
-  // 🔹 Лог рендера
-  console.log("🎨 [SignInPage] Render, loading:", loading, "error:", error);
 
   return (
     <div className="auth-page">
@@ -67,10 +74,7 @@ export default function SignInPage() {
             className="auth-page__input"
             type="text"
             value={form.login}
-            onChange={(e) => {
-              console.log("✏️ [Input] Login changed:", e.target.value);
-              setForm({ ...form, login: e.target.value });
-            }}
+            onChange={(e) => setForm({ ...form, login: e.target.value })}
             required
             disabled={loading}
             autoComplete="username"
@@ -82,10 +86,7 @@ export default function SignInPage() {
             className="auth-page__input"
             type="password"
             value={form.password}
-            onChange={(e) => {
-              console.log("✏️ [Input] Password changed:", e.target.value);
-              setForm({ ...form, password: e.target.value });
-            }}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
             disabled={loading}
             autoComplete="current-password"
@@ -95,15 +96,10 @@ export default function SignInPage() {
             type="submit" 
             className="auth-page__submit" 
             disabled={loading}
-            onClick={() => console.log("🖱️ [Button] Click event fired")}
           >
             {loading ? (
-              <>
-                <Spinner animation="border" size="sm" className="auth-page__spinner" /> Вход…
-              </>
-            ) : (
-              "Войти"
-            )}
+              <><Spinner animation="border" size="sm" className="auth-page__spinner" /> Вход…</>
+            ) : "Войти"}
           </button>
         </form>
         

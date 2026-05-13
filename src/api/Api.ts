@@ -1,4 +1,7 @@
 // src/api/index.ts
+// ⚠️ Файл автогенерации из Swagger/OpenAPI спецификации бэкенда.
+// По ТЗ ЛР: используются ТОЛЬКО api.tirePressure и api.tirePressureEntries.
+
 import type {
   AxiosInstance,
   AxiosRequestConfig,
@@ -8,7 +11,6 @@ import type {
 } from "axios";
 import axios from "axios";
 
-// ─── Типы ──────────────────────────────────────────────────────────────
 export type QueryParamsType = Record<string | number, any>;
 
 export interface FullRequestParams
@@ -41,25 +43,7 @@ export const ContentType = {
 } as const;
 export type ContentType = (typeof ContentType)[keyof typeof ContentType];
 
-// ─── Типы данных (адаптируй под свой бэкенд) ─────────────────────────
-export interface SerializerUserJSON {
-  login: string;
-  password: string;
-  is_moderator?: boolean;
-}
-
-export interface SerializerTireJSON {
-  tire_id?: number;
-  tire_title?: string;
-  description?: string;
-  photo?: string;
-  video?: string;
-  tire_material_coefficient?: number;
-  tire_thickness_coefficient?: number;
-  short_description_en?: string;
-  is_delete?: boolean;
-}
-
+// ─── Типы для доменов "Заявка" и "М-М" ─────────────────────────────────
 export interface SerializerTirePressureJSON {
   tire_pressure_id?: number;
   creator_login?: string;
@@ -90,7 +74,7 @@ export interface SerializerCartJSON {
 }
 
 export interface SerializerFinishJSON {
-  status: "completed" | "rejected";
+  status: "завершён" | "отклонён"; 
 }
 
 export interface SerializerTirePressureUpdateJSON {
@@ -103,7 +87,6 @@ export interface SerializerTirePressureEntryUpdateJSON {
   coating_coefficient?: number;
 }
 
-// ─── HttpClient (как в примере) ───────────────────────────────────────
 export class HttpClient<SecurityDataType = unknown> {
   public instance: AxiosInstance;
   private securityData: SecurityDataType | null = null;
@@ -209,75 +192,10 @@ export class HttpClient<SecurityDataType = unknown> {
   };
 }
 
-// ─── Api (наследуется от HttpClient → api.instance работает!) ─────────
+
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   
-  // 👤 Auth
-  users = {
-    signinCreate: (credentials: SerializerUserJSON, params: RequestParams = {}) =>
-      this.request<Record<string, any>, Record<string, string>>({
-        path: `/users/signin`,
-        method: "POST",
-        body: credentials,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
 
-    signoutCreate: (params: RequestParams = {}) =>
-      this.request<void, Record<string, string>>({
-        path: `/users/signout`,
-        method: "POST",
-        secure: true,
-        ...params,
-      }),
-
-    signupCreate: (user: SerializerUserJSON, params: RequestParams = {}) =>
-      this.request<SerializerUserJSON, Record<string, string>>({
-        path: `/users/signup`,
-        method: "POST",
-        body: user,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-  };
-
-  // 🛞 Tires
-  tires = {
-    tiresList: (query?: { Title?: string }, params: RequestParams = {}) =>
-      this.request<SerializerTireJSON[], Record<string, string>>({
-        path: `/tires`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-
-    tiresDetail: (id: number, params: RequestParams = {}) =>
-      this.request<SerializerTireJSON, Record<string, string>>({
-        path: `/tires/${id}`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    tiresCreate: (
-      data: Partial<SerializerTireJSON> & { photo?: File; video?: File },
-      params: RequestParams = {},
-    ) =>
-      this.request<SerializerTireJSON, Record<string, string>>({
-        path: `/tires`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.FormData,
-        format: "json",
-        ...params,
-      }),
-  };
-
-  // 📋 Tire Pressure (заявки)
   tirePressure = {
     tirePressureCartList: (params: RequestParams = {}) =>
       this.request<SerializerCartJSON, any>({
@@ -361,7 +279,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
   };
 
-  // 🔗 Tire Pressure Entries (шины в заявке)
+
   tirePressureEntries = {
     add: (tireId: number, params: RequestParams = {}) =>
       this.request<Record<string, any>, Record<string, string>>({
@@ -399,12 +317,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
 }
 
-// ─── Экспорт и настройка интерцепторов ─────────────────────────────────
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 export const api = new Api({ baseURL });
 
-// 🔒 Интерцептор запросов: добавляем JWT
+
 api.instance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -413,7 +330,7 @@ api.instance.interceptors.request.use((config) => {
   return config;
 });
 
-// 🔓 Интерцептор ответов: сохраняем токен при логине
+
 api.instance.interceptors.response.use(
   (response) => {
     const data = response.data;
