@@ -182,7 +182,8 @@ export default function TiresPage() {
 
       <div className="space">
         <main className="tires-page__main">
-          <CartRow />
+            <CartRow />
+
 
           {/* === Секция CLIP-поиска === */}
           <section

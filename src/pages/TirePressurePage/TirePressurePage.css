@@ -73,14 +73,20 @@ body, #root, .main-content {
   background: #f0f0f0;
   color: #333;
 }
-
 /* === Блок параметров расчёта === */
 .calculation-params {
   background: #fafafa;
   border: 1px solid #e8e8ec;
   border-radius: 6px;
+
   padding: 16px 20px;
   margin-bottom: 24px;
+
+  align-self: flex-start;
+  height: auto;
+  min-height: unset;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .calculation-params h3 {
@@ -88,28 +94,39 @@ body, #root, .main-content {
   font-weight: 600;
   color: #333;
   margin: 0 0 12px;
+  line-height: 1.3;
 }
 
+/* ✅ исправленный flex */
 .params-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 24px;
   align-items: flex-end;
+  align-content: flex-start;
+  gap: 16px 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* ✅ больше НЕ растягивается */
 .param-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1 1 180px;
+  flex: 0 0 auto;
+  width: 220px;
   min-width: 180px;
   max-width: 220px;
+  align-self: flex-start;
+  box-sizing: border-box;
 }
 
 .param-group label {
   font-size: 13px;
   color: #666;
   font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
 }
 
 .param-group .form-control {
@@ -121,11 +138,13 @@ body, #root, .main-content {
   border-radius: 6px;
   background: #fff;
   box-sizing: border-box;
+  min-height: 38px;
 }
 
 .param-group .form-control:focus {
   border-color: #ed1c24;
   outline: none;
+  box-shadow: none;
 }
 
 .param-group .form-control:disabled {
@@ -133,30 +152,102 @@ body, #root, .main-content {
   cursor: not-allowed;
 }
 
+/* === input + unit === */
 .input-with-unit {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
 }
 
 .input-with-unit .unit {
   font-size: 13px;
   color: #999;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .calculation-params .text-end {
   margin-top: 16px;
-  text-align: right;
+  text-align: center !important; /* ✅ Кнопка по центру */
 }
 
-/* === Обёртка таблицы === */
+/* ============================================================ */
+/* ✅ MOBILE */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+  .calculation-params {
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+
+  .calculation-params h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+  }
+
+  .params-row {
+    flex-direction: column;
+    align-items: stretch;
+    align-content: stretch;
+    gap: 10px;
+  }
+
+  .param-group {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .param-group .form-control {
+    max-width: 100%;
+  }
+
+  .calculation-params .text-end {
+    margin-top: 12px;
+    text-align: center !important; /* ✅ По центру и на мобильных */
+  }
+}
+
+/* ============================================================ */
+/* ✅ VERY SMALL */
+/* ============================================================ */
+
+@media (max-width: 640px) {
+  .calculation-params {
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+
+  .params-row {
+    gap: 8px;
+  }
+
+  .param-group {
+    gap: 3px;
+  }
+
+  .param-group .form-control {
+    min-height: 36px;
+    font-size: 13px;
+  }
+
+  .input-with-unit .unit {
+    font-size: 12px;
+  }
+}
+
+/* === Обёртка таблицы — АДАПТИВ КАК В ПРИМЕРЕ === */
 .tire-pressure-table-wrapper {
   width: 100%;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
   margin-bottom: 24px;
   border: 1px solid #6b6b6b;
   border-radius: 6px;
@@ -165,7 +256,7 @@ body, #root, .main-content {
 
 .tire-pressure-table {
   width: 100%;
-  min-width: 700px;
+  min-width: 720px;
   border-collapse: collapse;
   font-size: 14px;
   background: #fff;
@@ -181,6 +272,7 @@ body, #root, .main-content {
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tire-pressure-table th {
@@ -189,19 +281,18 @@ body, #root, .main-content {
   font-weight: 600;
   color: #333;
   border-bottom: 2px solid #6b6b6b;
-  white-space: nowrap;
 }
 
 .tire-pressure-table tr:hover {
   background: #f9f9f9;
 }
 
-/* === Ширина колонок === */
+/* === Ширина колонок (десктоп) === */
 .tire-pressure-table__col-photo { width: 8%; min-width: 60px; text-align: center; }
 .tire-pressure-table__col-name { width: 28%; min-width: 140px; }
 .tire-pressure-table__col-coeff { width: 18%; min-width: 100px; font-size: 13px; }
 .tire-pressure-table__col-coating { width: 16%; min-width: 110px; }
-.tire-pressure-table__col-pressure { width: 12%; min-width: 70px; text-align: right; white-space: nowrap; }
+.tire-pressure-table__col-pressure { width: 12%; min-width: 70px; text-align: right; }
 .tire-pressure-table__col-actions { width: 18%; min-width: 130px; text-align: center; }
 
 .tire-pressure-table__col-photo img {
@@ -272,6 +363,8 @@ body, #root, .main-content {
   border-bottom: 1px solid #eee;
   border-top: none;
   justify-content: flex-start;
+  display: flex;
+  gap: 12px;
 }
 
 .tire-pressure-page__delete-btn {
@@ -283,7 +376,20 @@ body, #root, .main-content {
   background: #c82333;
 }
 
-/* === Адаптив === */
+/* === АДАПТИВ: планшеты (≤900px) — горизонтальный скролл таблицы === */
+@media (max-width: 900px) {
+  .tire-pressure-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+  
+  .tire-pressure-table {
+    min-width: 720px;
+  }
+}
+
+/* === АДАПТИВ: мобильные (≤768px) — компактный интерфейс === */
 @media (max-width: 768px) {
   .tire-pressure-detail {
     padding: 16px;
@@ -296,11 +402,12 @@ body, #root, .main-content {
   
   .params-row {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
   
   .param-group {
     max-width: 100%;
+    gap: 4px;
   }
   
   .param-group .form-control {
@@ -311,6 +418,7 @@ body, #root, .main-content {
   .tire-pressure-page__actions--top {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
   
   .tire-pressure-page__actions .btn,
@@ -334,16 +442,52 @@ body, #root, .main-content {
     display: inline;
   }
   
-  /* На мобильных — ещё более компактные колонки */
-  .tire-pressure-table__col-photo { width: 10%; min-width: 50px; }
-  .tire-pressure-table__col-name { width: 30%; }
-  .tire-pressure-table__col-coeff { width: 20%; font-size: 12px; }
-  .tire-pressure-table__col-coating { width: 18%; }
-  .tire-pressure-table__col-pressure { width: 12%; }
-  .tire-pressure-table__col-actions { width: 10%; min-width: 90px; }
   .tire-pressure-table__col-actions .btn {
     padding: 3px 6px;
     font-size: 11px;
+  }
+}
+
+/* === АДАПТИВ: очень узкие экраны (≤640px) — ещё компактнее === */
+@media (max-width: 640px) {
+  .tire-pressure-table th,
+  .tire-pressure-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .tire-pressure-table__col-photo { width: 10%; min-width: 45px; }
+  .tire-pressure-table__col-name { width: 32%; }
+  .tire-pressure-table__col-coeff { width: 20%; font-size: 11px; }
+  .tire-pressure-table__col-coating { width: 18%; }
+  .tire-pressure-table__col-pressure { width: 10%; }
+  .tire-pressure-table__col-actions { width: 10%; min-width: 80px; }
+  
+  .tire-pressure-table__col-photo img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .tire-pressure-table__col-coating .form-control {
+    max-width: 70px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+  
+  .tire-pressure-table__col-actions .btn {
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+  
+  .calculation-params {
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+  .params-row {
+    gap: 8px;
+  }
+  .param-group {
+    gap: 3px;
   }
 }
 
@@ -358,20 +502,4 @@ body, #root, .main-content {
   border-radius: 6px;
   max-width: 400px;
   margin: 0 auto;
-}
-
-/* src/pages/TirePressuresPage/TirePressuresPage.css */
-
-/* === Счётчик результатов === */
-.tire-pressures-page__results-count {
-  text-align: right;
-  padding: 8px 0 16px;
-  color: #666;
-  font-size: 14px;
-  margin: 0;
-}
-
-.tire-pressures-page__results-count strong {
-  color: #ed1c24; /* ✅ Акцентный цвет */
-  font-weight: 700;
 }

@@ -336,19 +336,6 @@ body, #root, .main-content {
   display: none;
 }
 
-@media (max-width: 576px) {
-  .clip-search-section__panel {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .clip-search-section__action-panel {
-    width: 100%;
-    align-items: center;
-  }
-}
-
 .tires-page__clip-results {
   width: 100%;
   max-width: 1160px;
@@ -506,8 +493,9 @@ body, #root, .main-content {
 /* ✅ АДАПТИВНОСТЬ (Требования ЛР 8: конкретные значения) */
 /* ============================================================ */
 
-/* 📱 Mobile (<768px): 1 колонка, карточки вертикально */
+/* 📱 Mobile (<768px): 1 колонка, карточки вертикально + CLIP компактный */
 @media (max-width: 767px) {
+  /* --- Поиск --- */
   .header-controls {
     flex-direction: column;
     gap: 10px;
@@ -516,20 +504,79 @@ body, #root, .main-content {
     width: 100%;
   }
 
+  /* --- Сетка карточек --- */
   .tires-grid {
-    grid-template-columns: 1fr;          /* ✅ 1 колонка */
-    gap: 16px;                           /* ✅ Отступ 16px */
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   .tire-card {
-    flex-direction: column;              /* ✅ Вертикальное расположение */
+    flex-direction: column;
     height: auto;
-    min-height: 280px;                   /* ✅ Мин. высота карточки 280px */
+    min-height: 280px;
   }
   .tire-left {
     width: 100%;
-    height: 180px;                       /* ✅ Фиксированная высота картинки */
+    height: 180px;
+    flex-shrink: 0;
+    overflow: hidden;
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
+  }
+  .tire-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .device-info {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  /* --- CLIP-панель: КНОПКИ В РЯД, КОНТЕЙНЕР КОМПАКТНЫЙ --- */
+  .clip-search-section__panel {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .clip-search-section__preview-image,
+  .clip-search-section__placeholder-image {
+    width: 90px;   /* ✅ Квадрат стал компактнее */
+    height: 90px;
+    margin: 0 auto;
+  }
+
+  .clip-search-section__action-panel {
+    flex-direction: row;   /* ✅ КНОПКИ ГОРИЗОНТАЛЬНО */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+  }
+
+  .clip-search-section__btn-upload,
+  .clip-search-section__action-panel .action-btn {
+    flex: 1 1 calc(50% - 8px); /* ✅ Делят ширину 50/50 */
+    min-width: 110px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .clip-search-section__progress {
+    width: 100%;
+    margin: 4px 0 0;
   }
 
   .clip-result-row {
@@ -539,6 +586,8 @@ body, #root, .main-content {
   .clip-result-row .row-image {
     width: 100%;
     height: 160px;
+    object-fit: cover;
+    flex-shrink: 0;
   }
   .clip-result-row .row-stats {
     width: 100%;
@@ -553,24 +602,24 @@ body, #root, .main-content {
 /* 📱 Tablet (768px - 1023px): 2 колонки */
 @media (min-width: 768px) and (max-width: 1023px) {
   .tires-grid {
-    grid-template-columns: repeat(2, 1fr); /* ✅ 2 колонки */
-    gap: 20px;                             /* ✅ Отступ 20px */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
   .tire-card {
-    height: 220px;                         /* ✅ Высота карточки 220px */
+    height: 220px;
   }
 }
 
 /* 🖥️ Desktop (≥1024px): 3 колонки */
 @media (min-width: 1024px) {
   .tires-grid {
-    grid-template-columns: repeat(3, 1fr); /* ✅ 3 колонки */
-    gap: 24px;                             /* ✅ Отступ 24px */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
   }
   .tire-card {
-    height: 240px;                         /* ✅ Высота карточки 240px */
+    height: 240px;
   }
   .tire-left {
-    width: 140px;                          /* ✅ Ширина картинки 140px */
+    width: 140px;
   }
 }
