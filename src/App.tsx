@@ -5,7 +5,6 @@ import TireDetailPage from "./pages/TireDetailPage/TireDetailPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 
-// ✅ Импортируем переименованные компоненты
 import TirePressurePage from "./pages/TirePressurePage/TirePressurePage";
 import TirePressuresPage from "./pages/TirePressuresPage/TirePressuresPage";
 
@@ -17,9 +16,18 @@ import "./index_style.css";
 import "./theme-1c.css";
 import "./index.css";
 
+// ✅ Добавлено из примера: basename для GitHub Pages
+function routerBasename(): string | undefined {
+  const b = import.meta.env.BASE_URL ?? "/";
+  if (b === "/") return undefined;
+  const trimmed = b.endsWith("/") ? b.slice(0, -1) : b;
+  return trimmed === "" ? undefined : trimmed;
+}
+
 function App() {
   return (
-    <BrowserRouter>
+    // ✅ Добавлено: basename={routerBasename()}
+    <BrowserRouter basename={routerBasename()}>
       <Routes>
         <Route element={<MainLayout />}>
           
@@ -29,14 +37,8 @@ function App() {
           <Route path={ROUTES.SIGN_IN} element={<SignInPage />} />
           <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
           
-          {/* === Страницы заявок (защита внутри компонентов) === */}
-          
-          {/* 🔹 Список заявок */}
-          {/* ✅ ИЗМЕНЕНО: APPLICATIONS → TIRE_PRESSURES, ApplicationsPage → TirePressuresPage */}
+          {/* === Страницы заявок === */}
           <Route path={ROUTES.TIRE_PRESSURES} element={<TirePressuresPage />} />
-          
-          {/* 🔹 Детали заявки */}
-          {/* ✅ ИЗМЕНЕНО: APPLICATION → TIRE_PRESSURE, ApplicationPage → TirePressurePage */}
           <Route path={ROUTES.TIRE_PRESSURE} element={<TirePressurePage />} />
           
           {/* === Редиректы === */}

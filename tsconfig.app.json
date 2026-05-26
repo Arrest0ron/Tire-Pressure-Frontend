@@ -5,7 +5,13 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client"],
+    
+    /* ✅ Добавлены типы для PWA */
+    "types": [
+      "vite/client",
+      "vite-plugin-pwa/client"
+    ],
+    
     "skipLibCheck": true,
 
     /* Bundler mode */

@@ -48,7 +48,7 @@ body, #root, .main-content {
 .header-controls .form-control:focus {
   border-color: #ed1c24;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.15); /* ✅ Акцентное свечение */
+  box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.15);
 }
 
 .header-controls .btn-submit {
@@ -85,7 +85,7 @@ body, #root, .main-content {
   box-sizing: border-box;
 }
 
-/* === Карточка: акцентные ховер-эффекты === */
+/* === Карточка === */
 .tire-card {
   background: #ffffff;
   border: 2px solid #6b6b6b;
@@ -101,12 +101,11 @@ body, #root, .main-content {
 }
 
 .tire-card:hover {
-  border-color: #ed1c24; /* ✅ Акцентная рамка при наведении */
-  box-shadow: 0 4px 16px rgba(237, 28, 36, 0.15); /* ✅ Акцентная тень */
+  border-color: #ed1c24;
+  box-shadow: 0 4px 16px rgba(237, 28, 36, 0.15);
   transform: translateY(-2px);
 }
 
-/* === Изображение слева === */
 .tire-left {
   width: 160px;
   flex-shrink: 0;
@@ -124,7 +123,6 @@ body, #root, .main-content {
   display: block;
 }
 
-/* === Информация справа === */
 .device-info {
   flex: 1;
   padding: 16px;
@@ -148,7 +146,7 @@ body, #root, .main-content {
 }
 
 .tire-card:hover .tire-title {
-  color: #ed1c24; /* ✅ Заголовок меняет цвет при наведении на карточку */
+  color: #ed1c24;
 }
 
 .device-pressure {
@@ -168,7 +166,6 @@ body, #root, .main-content {
   text-overflow: ellipsis;
 }
 
-/* === Кнопка "Подробнее" — акцентные цвета === */
 .tire-btn {
   margin-top: auto;
   padding: 10px 0;
@@ -197,20 +194,19 @@ body, #root, .main-content {
   transform: translateY(0);
 }
 
-/* === Пустой результат === */
 .tires-page__empty {
   text-align: center;
   padding: 40px 20px;
   color: #666;
   background: #ffffff;
-  border: 2px solid #ed1c24; /* ✅ Акцентная рамка */
+  border: 2px solid #ed1c24;
   border-radius: 6px;
   max-width: 400px;
   margin: 0 auto;
 }
 
 /* ============================================================ */
-/* ✅ Секция CLIP-поиска: акцентные цвета */
+/* ✅ Секция CLIP-поиска */
 /* ============================================================ */
 
 .clip-search-section__heading {
@@ -231,7 +227,7 @@ body, #root, .main-content {
 }
 
 .clip-search-section__panel:focus-within {
-  border-color: #ed1c24; /* ✅ Акцентная рамка при фокусе внутри */
+  border-color: #ed1c24;
 }
 
 .clip-search-section__preview-wrap {
@@ -251,7 +247,7 @@ body, #root, .main-content {
 }
 
 .clip-search-section__preview-image:hover {
-  border-color: #ed1c24; /* ✅ Акцент при наведении на превью */
+  border-color: #ed1c24;
 }
 
 .clip-search-section__placeholder-image {
@@ -285,7 +281,6 @@ body, #root, .main-content {
   margin: 4px 0;
 }
 
-/* === Кнопки загрузки: акцентные цвета === */
 .clip-search-section__btn-upload,
 .clip-search-section__action-panel .action-btn {
   padding: 14px 20px;
@@ -318,7 +313,6 @@ body, #root, .main-content {
   transform: none;
 }
 
-/* Кнопка "Сбросить" — вторичный стиль */
 .clip-search-section__action-panel .btn-outline-danger {
   background: #fff;
   color: #ed1c24;
@@ -335,14 +329,13 @@ body, #root, .main-content {
 }
 
 .clip-search-section__progress .progress-bar {
-  background: #ed1c24; /* ✅ Акцентный прогресс-бар */
+  background: #ed1c24;
 }
 
 .clip-search-section__file-input {
   display: none;
 }
 
-/* === Адаптив для CLIP === */
 @media (max-width: 576px) {
   .clip-search-section__panel {
     flex-direction: column;
@@ -356,7 +349,6 @@ body, #root, .main-content {
   }
 }
 
-/* === Результаты поиска === */
 .tires-page__clip-results {
   width: 100%;
   max-width: 1160px;
@@ -373,7 +365,6 @@ body, #root, .main-content {
   gap: 20px;
 }
 
-/* === Строка результата: акцентные ховер-эффекты === */
 .tire-row,
 .clip-result-row {
   background: #ffffff;
@@ -391,7 +382,7 @@ body, #root, .main-content {
 }
 
 .clip-result-row:hover {
-  border-color: #ed1c24; /* ✅ Акцентная рамка */
+  border-color: #ed1c24;
   box-shadow: 0 4px 16px rgba(237, 28, 36, 0.15);
   transform: translateY(-2px);
 }
@@ -428,7 +419,7 @@ body, #root, .main-content {
 }
 
 .clip-result-row:hover .row-content h5 {
-  color: #ed1c24; /* ✅ Заголовок меняет цвет при наведении */
+  color: #ed1c24;
 }
 
 .clip-result-row__en {
@@ -453,7 +444,6 @@ body, #root, .main-content {
   text-overflow: ellipsis;
 }
 
-/* === Блок со статистикой (сходство) — акцентные цвета === */
 .clip-result-row .row-stats {
   width: 140px;
   padding: 16px;
@@ -479,10 +469,6 @@ body, #root, .main-content {
   color: #666;
   text-align: center;
 }
-
-/* ============================================================ */
-/* 🔹 ФИКС ШИРИНЫ: Секция CLIP-поиска = ширина сетки карточек */
-/* ============================================================ */
 
 .tires-page__clip-search.clip-search-section {
   width: 100%;
@@ -513,5 +499,78 @@ body, #root, .main-content {
   .tires-page__clip-results {
     max-width: 100%;
     padding: 0 15px;
+  }
+}
+
+/* ============================================================ */
+/* ✅ АДАПТИВНОСТЬ (Требования ЛР 8: конкретные значения) */
+/* ============================================================ */
+
+/* 📱 Mobile (<768px): 1 колонка, карточки вертикально */
+@media (max-width: 767px) {
+  .header-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .header-controls .btn-submit {
+    width: 100%;
+  }
+
+  .tires-grid {
+    grid-template-columns: 1fr;          /* ✅ 1 колонка */
+    gap: 16px;                           /* ✅ Отступ 16px */
+  }
+  .tire-card {
+    flex-direction: column;              /* ✅ Вертикальное расположение */
+    height: auto;
+    min-height: 280px;                   /* ✅ Мин. высота карточки 280px */
+  }
+  .tire-left {
+    width: 100%;
+    height: 180px;                       /* ✅ Фиксированная высота картинки */
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .clip-result-row {
+    flex-direction: column;
+    height: auto;
+  }
+  .clip-result-row .row-image {
+    width: 100%;
+    height: 160px;
+  }
+  .clip-result-row .row-stats {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+    padding: 12px;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+/* 📱 Tablet (768px - 1023px): 2 колонки */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tires-grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ 2 колонки */
+    gap: 20px;                             /* ✅ Отступ 20px */
+  }
+  .tire-card {
+    height: 220px;                         /* ✅ Высота карточки 220px */
+  }
+}
+
+/* 🖥️ Desktop (≥1024px): 3 колонки */
+@media (min-width: 1024px) {
+  .tires-grid {
+    grid-template-columns: repeat(3, 1fr); /* ✅ 3 колонки */
+    gap: 24px;                             /* ✅ Отступ 24px */
+  }
+  .tire-card {
+    height: 240px;                         /* ✅ Высота карточки 240px */
+  }
+  .tire-left {
+    width: 140px;                          /* ✅ Ширина картинки 140px */
   }
 }
