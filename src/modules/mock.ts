@@ -5,10 +5,8 @@ import {
   type TirePressureDetailResponse,
 } from "./tireApi";
 
-import tungaPhoto from "../assets/Tunga_Nordway.jpg";
-import mrlPhoto from "../assets/mrl-mr3.jpg";
-import mitasPhoto from "../assets/MITAS_TR-08.jpg";
-import michelinPhoto from "../assets/Michelin_Latitude_Tour.jpg";
+// ✅ Импортируем единую дефолтную картинку
+import defaultTire from "../assets/default_tire.png";
 
 export const TIRES_MOCK: Tire[] = [
   {
@@ -18,7 +16,7 @@ export const TIRES_MOCK: Tire[] = [
     description:
       "Зимняя шипованная шина с агрессивным V-образным протектором. Усиленный каркас, отличное сцепление на льду и укатанном снегу. Подходит для легковых автомобилей и кроссоверов.",
     short_description_en: "Studded winter tire with aggressive V-tread for ice roads",
-    photo: "",
+    photo: defaultTire,  // ✅ Одна и та же картинка для всех
     video: "",
     tire_material_coefficient: 1.3,
     tire_thickness_coefficient: 0.9,
@@ -30,7 +28,7 @@ export const TIRES_MOCK: Tire[] = [
     description:
       "Всесезонная широкопрофильная шина для спецтехники. Усиленный каркас, стойкость к порезам и ударам. Оптимизирована для работы на твёрдых и смешанных покрытиях.",
     short_description_en: "Wide-profile all-season tire for heavy trucks and machinery",
-    photo: "",
+    photo: defaultTire,  // ✅
     video: "",
     tire_material_coefficient: 2.1,
     tire_thickness_coefficient: 1.8,
@@ -42,7 +40,7 @@ export const TIRES_MOCK: Tire[] = [
     description:
       "Всесезонная арочная шина для сельскохозяйственной техники. Гибкая боковина, увеличенное пятно контакта, минимальное давление на почву. Для полевых работ.",
     short_description_en: "Arched agricultural tire with flexible sidewall for soft soil",
-    photo: "",
+    photo: defaultTire,  // ✅
     video: "",
     tire_material_coefficient: 1.9,
     tire_thickness_coefficient: 1.6,
@@ -54,7 +52,7 @@ export const TIRES_MOCK: Tire[] = [
     description:
       "Летняя шина для кроссоверов и внедорожников. Асимметричный протектор, низкий уровень шума, топливная экономичность. Комфорт на трассе и в городе.",
     short_description_en: "Summer highway tire with low noise and fuel efficient design",
-    photo: "",
+    photo: defaultTire,  // ✅
     video: "",
     tire_material_coefficient: 1.1,
     tire_thickness_coefficient: 0.7,
