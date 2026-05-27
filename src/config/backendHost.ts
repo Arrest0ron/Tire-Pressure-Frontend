@@ -1,7 +1,7 @@
 // src/config/backendHost.ts
 
 // 🔹 Твой ZeroTier IP (ноутбук с бэкендом)
-export const ZEROTIER_PC_HOST = '10.112.25.52'  // ✅ ТВОЙ АДРЕС
+export const ZEROTIER_PC_HOST = '10.112.25.129'  // ✅ ТВОЙ АДРЕС
 
 // 🔹 Телефон (опционально, для тестов)
 export const ZEROTIER_PHONE_HOST = '10.112.25.104'  // ← замени на IP телефона, если нужно
