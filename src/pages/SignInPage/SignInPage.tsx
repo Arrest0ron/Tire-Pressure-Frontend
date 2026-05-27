@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
-import axios from "axios"; // ✅ Прямой импорт, без api.*
+
+// ✅ Импортируем НАШ настроенный экземпляр api (вместо прямого axios)
+import { api } from "../../api";
+
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { setUser, setUserLoading, setUserError, logoutUser } from "../../store/slices/userSlice"; // ✅ Только синхронные экшены
+import { setUser, setUserLoading, setUserError } from "../../store/slices/userSlice";
 import { ROUTES } from "../../Routes";
 import "./SignInPage.css";
 
@@ -34,8 +37,10 @@ export default function SignInPage() {
     dispatch(setUserError(null));
 
     try {
-      // ✅ ПРЯМОЙ AXIOS — не через api.users, не через thunk
-      const response = await axios.post("/api/users/signin", {
+      // ✅ ИСПРАВЛЕНО: используем api.instance вместо прямого axios
+      // baseURL подставится автоматически из src/api/index.ts
+      // Путь: '/users/signin' (без /api в начале, т.к. baseURL уже содержит /api)
+      const response = await api.instance.post("/users/signin", {  // ← Убрали /api из пути!
         login: form.login,
         password: form.password,
       }, {

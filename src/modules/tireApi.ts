@@ -1,10 +1,12 @@
 // src/modules/tireApi.ts
-import axios from "axios";
+// ✅ Импортируем НАШ настроенный экземпляр api (с правильным baseURL)
+import { api } from "../api";
 
 const MINIO_PUBLIC_BASE =
   (import.meta.env.VITE_MINIO_PUBLIC_BASE?.replace(/\/$/, "") as string | undefined) ??
   "http://localhost:9090/tire-bucket";
 
+// ... (все интерфейсы и типы оставляем без изменений) ...
 export type TirePressureStatus = 'черновик' | 'удалён' | 'сформирован' | 'завершён' | 'отклонён';
 
 export interface Tire {
@@ -16,7 +18,7 @@ export interface Tire {
   tire_material_coefficient: number;
   tire_thickness_coefficient: number;
   is_delete?: boolean;
-  short_description_en?: string; // ✅ для CLIP
+  short_description_en?: string;
 }
 
 export function tireClipDescription(t: Tire): string {
@@ -84,12 +86,11 @@ export function resolveMediaUrl(key: string): string {
   return objectUrlFromKey(key);
 }
 
-// ─── API: Tires (услуги) — ТОЛЬКО AXIOS, без thunk ─────────────────────
-
-// ✅ Исправлено: fetch → axios
+// ✅ ИСПРАВЛЕНО: используем api.instance вместо прямого axios
 export async function listTires(params?: { title?: string }): Promise<Tire[]> {
   try {
-    const response = await axios.get<Tire[]>("/api/tires", {
+    // ✅ baseURL подставится автоматически из src/api/index.ts
+    const response = await api.instance.get<Tire[]>("/tires", {  // ← убрали /api из пути!
       params: params?.title ? { Title: params.title } : undefined,
       headers: { Accept: "application/json" },
     });
@@ -100,10 +101,10 @@ export async function listTires(params?: { title?: string }): Promise<Tire[]> {
   }
 }
 
-// ✅ Исправлено: fetch → axios
 export async function getTire(id: number): Promise<Tire | null> {
   try {
-    const response = await axios.get<Tire>(`/api/tires/${id}`, {
+    // ✅ baseURL подставится автоматически
+    const response = await api.instance.get<Tire>(`/tires/${id}`, {  // ← убрали /api из пути!
       headers: { Accept: "application/json" },
     });
     return response.data;

@@ -2,6 +2,7 @@
 import { Api } from "./Api";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+console.log('[API] baseURL:', baseURL);  // В консоли браузера будет видно, куда стучится приложение
 
 export const api = new Api({ baseURL });
 
