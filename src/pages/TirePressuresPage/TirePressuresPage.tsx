@@ -13,7 +13,6 @@ import "./TirePressuresPage.css";
 
 function statusLabel(s: string | undefined): string {
   const m: Record<string, string> = {
-    "черновик": "Черновик",
     "сформирован": "Сформирована",
     "завершён": "Завершена",
     "отклонен": "Отклонена",
@@ -35,6 +34,12 @@ function formatRuDate(dateStr: string | null | undefined): string {
   }
 }
 
+// ✅ Форматирование числовых параметров с единицами
+function formatParam(value: number | null | undefined, unit: string): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  return `${value}${unit}`;
+}
+
 export default function TirePressuresPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -44,9 +49,8 @@ export default function TirePressuresPage() {
   );
 
   const [creatorFilter, setCreatorFilter] = useState("");
-  const [themeFilter, setThemeFilter] = useState(""); // ✅ Поиск по теме
+  const [themeFilter, setThemeFilter] = useState("");
   
-  // ✅ Дефолтные фильтры: сегодня
   const today = new Date().toISOString().split("T")[0];
   const [draftFrom, setDraftFrom] = useState(filters.fromDate || today);
   const [draftTo, setDraftTo] = useState(filters.toDate || today);
@@ -62,7 +66,6 @@ export default function TirePressuresPage() {
     void dispatch(fetchTirePressuresList());
   }, [dispatch]);
 
-  // ✅ Short polling: обновляем список каждые 1 секунду
   useEffect(() => {
     if (!isAuthenticated) {
       navigate(ROUTES.SIGN_IN, { replace: true });
@@ -73,9 +76,8 @@ export default function TirePressuresPage() {
     return () => window.clearInterval(id);
   }, [isAuthenticated, navigate, load]);
 
-  // ✅ Фильтрация: бэкенд (дата/статус) + фронтенд (создатель + тема)
   const visible = useMemo(() => {
-    let result = list;
+    let result = list.filter((a) => a.status !== "черновик");
 
     if (isModerator && creatorFilter.trim()) {
       const q = creatorFilter.trim().toLowerCase();
@@ -144,7 +146,6 @@ export default function TirePressuresPage() {
                 onChange={(e) => setDraftStatus(e.target.value)}
               >
                 <option value="">Все</option>
-                <option value="черновик">Черновик</option>
                 <option value="сформирован">Сформирована</option>
                 <option value="завершён">Завершена</option>
                 <option value="отклонен">Отклонена</option>
@@ -196,6 +197,9 @@ export default function TirePressuresPage() {
                 <th>Создана</th>
                 <th>Формирование</th>
                 <th>Завершение</th>
+                {/* ✅ Новые столбцы: параметры расчёта */}
+                <th className="text-center">Темп. воздуха</th>
+                <th className="text-center">Вес авто</th>
                 <th className="text-center">Рассчитано</th>
                 {isModerator && <th>Модератор</th>}
                 {isModerator && <th>Действия</th>}
@@ -223,7 +227,17 @@ export default function TirePressuresPage() {
                     <td>{formatRuDate(row.date_formed)}</td>
                     <td>{formatRuDate(row.date_completed)}</td>
                     
-                    {/* ✅ Серый текст, без бейджа */}
+                    {/* ✅ Температура воздуха */}
+                    <td className="text-center text-muted">
+                      {formatParam(row.air_temperature, " °C")}
+                    </td>
+                    
+                    {/* ✅ Вес автомобиля */}
+                    <td className="text-center text-muted">
+                      {formatParam(row.car_weight, " кг")}
+                    </td>
+                    
+                    {/* ✅ Рассчитано шин */}
                     <td className="text-center text-muted">
                       {row.tire_entries_count ?? 0}
                     </td>
