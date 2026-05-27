@@ -14,6 +14,11 @@ import {
 } from "../../modules/tireApi";
 import { TIRES_MOCK } from "../../modules/mock";
 import { useTireImageSearch } from "../../hooks/useTireImageSearch";
+
+// ✅ Redux imports для фильтра
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setSearchQuery, clearSearchQuery } from "../../store/slices/tiresFilterSlice";
+
 import "./TiresPage.css";
 
 // ✅ Хелпер для резолва путей к изображениям (как в примере)
@@ -31,10 +36,14 @@ function resolveThumb(key: string): string {
 }
 
 export default function TiresPage() {
+  const dispatch = useAppDispatch();
+
+  // ✅ Фильтр из Redux (вместо локального useState)
+  const searchTitle = useAppSelector((s) => s.tiresFilter.searchQuery);
+
   // === Состояния данных ===
   const [clipSourceTires, setClipSourceTires] = useState<Tire[]>([]);
   const [displayTires, setDisplayTires] = useState<Tire[]>([]);
-  const [searchTitle, setSearchTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [useMock, setUseMock] = useState(false);
 
@@ -175,15 +184,25 @@ export default function TiresPage() {
     ? clipProcessed.filter((item) => item.isVisible)
     : [];
 
+  // ✅ Опционально: сброс фильтра при уходе со страницы (раскомментируй, если нужно)
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(clearSearchQuery());
+  //   };
+  // }, [dispatch]);
+
   return (
     <div className="tires-page">
       {/* === Текстовый поиск === */}
-      <Search query={searchTitle} onQueryChange={setSearchTitle} onSearch={handleSearch} />
+      <Search
+        query={searchTitle}
+        onQueryChange={(v) => dispatch(setSearchQuery(v))} // ✅ Dispatch в Redux
+        onSearch={handleSearch}
+      />
 
       <div className="space">
         <main className="tires-page__main">
-            <CartRow />
-
+          <CartRow />
 
           {/* === Секция CLIP-поиска === */}
           <section

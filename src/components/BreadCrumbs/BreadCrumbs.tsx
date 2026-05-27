@@ -2,7 +2,7 @@
 import "./Breadcrumbs.css";
 import React from "react";
 import { Link } from "react-router-dom";
-import { FC } from "react";
+import type { FC } from "react";
 
 export interface ICrumb {
   label: string;

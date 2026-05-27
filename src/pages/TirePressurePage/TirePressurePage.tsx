@@ -326,6 +326,7 @@ export default function TirePressurePage() {
             </thead>
             <tbody>
               {sortedEntries.map((entry) => {
+                if (entry.tire_id == null) return null;
                 const tire = tireById.get(entry.tire_id);
                 const rawPhoto = entry.photo || tire?.photo || "";
                 const photoUrl = rawPhoto ? resolveMediaUrl(rawPhoto) : fallbackImageUrl();

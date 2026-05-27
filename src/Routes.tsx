@@ -1,5 +1,6 @@
 // src/Routes.tsx
 export const ROUTES = {
+  MAIN: "/",  // ✅ Добавлено для главной страницы
   TIRES: "/tires",
   TIRE: "/tire/:id",
   TIRE_PRESSURE: "/tire-pressure/:id",       
@@ -11,6 +12,7 @@ export const ROUTES = {
 export type RouteKeyType = keyof typeof ROUTES;
 
 export const ROUTE_LABELS: { [key in RouteKeyType]: string } = {
+  MAIN: "Главная",  // ✅ Добавлено
   TIRES: "Каталог шин",
   TIRE: "Шина",
   TIRE_PRESSURE: "Заявка на расчёт",         
