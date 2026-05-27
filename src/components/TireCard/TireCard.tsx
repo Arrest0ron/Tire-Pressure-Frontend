@@ -3,70 +3,72 @@ import { Link } from "react-router-dom";
 import { useEffect, useState, type MouseEvent } from "react";
 import type { Tire } from "../../modules/tireApi";
 import { resolveMediaUrl, fallbackImageUrl } from "../../modules/tireApi";
-import { useAppDispatch, useAppSelector } from "../../store/hooks"; // ✅ Импорт хуков Redux
-import { addTireToCart } from "../../store/slices/tirePressureSlice"; // ✅ Импорт thunk-а
-import defaultTire from "../../assets/default_tire.png";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addTireToCart } from "../../store/slices/tirePressureSlice";
+import defaultTire from "../../assets/default_tire.png"; // ✅ Финальный фоллбэк
 import "./TireCard.css";
 
 interface TireCardProps {
   tire: Tire;
 }
 
-// 🔹 Событие для обновления корзины (как в примере)
 const CART_UPDATED = "tire-pressure-cart-updated";
 
 export default function TireCard({ tire }: TireCardProps) {
   const dispatch = useAppDispatch();
   
-  // ✅ Получаем состояние авторизации и загрузки из Redux
   const { isAuthenticated } = useAppSelector((s) => s.user);
   const applicationMutationLoading = useAppSelector(
     (s) => s.tirePressure.applicationMutationLoading,
   );
   
-  // ✅ Локальные состояния для изображения
   const [imageError, setImageError] = useState(false);
   const [imageUrl, setImageUrl] = useState(resolveMediaUrl(tire.photo || ""));
   const [adding, setAdding] = useState(false);
 
-  // ✅ Сброс ошибки изображения при смене шины
+  // ✅ Сброс ошибки при смене шины
   useEffect(() => {
     setImageError(false);
     setImageUrl(resolveMediaUrl(tire.photo || ""));
   }, [tire.photo]);
 
+  // ✅ Цепочка фоллбэков: resolveMediaUrl → fallbackImageUrl → defaultTire
   const handleImageError = () => {
-    setImageError(true);
+    if (!imageError) {
+      // Первая ошибка: пробуем fallbackImageUrl
+      setImageError(true);
+      setImageUrl(fallbackImageUrl());
+    } else {
+      // Вторая ошибка: ставим дефолтную картинку из assets
+      setImageUrl(defaultTire);
+    }
   };
 
-  // ✅ Обработчик добавления в заявку (как в примере)
   const handleAdd = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // 🔹 Если не авторизован — ничего не делаем
     if (!isAuthenticated) return;
     
     setAdding(true);
     try {
-      // 🔹 Диспатчим thunk для добавления шины
       await dispatch(addTireToCart(tire.tire_id!)).unwrap();
-      
-      // 🔹 Триггерим событие для обновления CartRow
       window.dispatchEvent(new Event(CART_UPDATED));
     } catch {
-      // Ошибка уже обработана в thunk и показана через apiErrMessage
       void 0;
     } finally {
       setAdding(false);
     }
   };
 
-  // ✅ Флаг занятости: добавление идёт ИЛИ глобальная загрузка мутаций
   const busy = adding || applicationMutationLoading;
+  const displayUrl = imageUrl; // imageUrl уже содержит фоллбэк-цепочку
 
-  // ✅ Резолвим итоговый URL изображения
-  const displayUrl = imageError ? fallbackImageUrl() : imageUrl;
+  // ✅ Отладка: раскомментируй, чтобы видеть, какой URL подставляется
+  // useEffect(() => {
+  //   console.log(`[TireCard #${tire.tire_id}] photo:`, tire.photo);
+  //   console.log(`[TireCard #${tire.tire_id}] displayUrl:`, displayUrl);
+  // }, [tire.tire_id, tire.photo, displayUrl]);
 
   return (
     <div className="tire-card">
@@ -75,31 +77,27 @@ export default function TireCard({ tire }: TireCardProps) {
           <img 
             src={displayUrl} 
             alt={tire.tire_title || "Шина"} 
-            onError={handleImageError}
+            onError={handleImageError}  // ✅ Двухуровневый фоллбэк
+            loading="lazy"
           />
         </Link>
       </div>
 
-      {/* === ПРАВАЯ ЧАСТЬ: Информация === */}
       <div className="device-info">
-        {/* ✅ Название шины — кликабельная ссылка */}
         <h3 className="tire-title">
           <Link to={`/tire/${tire.tire_id}`}>
             {tire.tire_title || `Шина #${tire.tire_id}`}
           </Link>
         </h3>
 
-        {/* Коэффициент */}
         <span className="device-pressure">
           Коэффициент: {tire.tire_material_coefficient ?? "—"}
         </span>
 
-        {/* Описание */}
         {tire.description && (
           <p className="tire-description">{tire.description}</p>
         )}
 
-        {/* ✅ Кнопка: активна только для авторизованных */}
         <button 
           type="button" 
           className="tire-btn"

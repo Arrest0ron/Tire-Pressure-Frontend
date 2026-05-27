@@ -9,7 +9,7 @@ import {
   tireClipDescription,
   fallbackImageUrl,
   listTires,
-  objectUrlFromKey,
+  resolveMediaUrl,  // ✅ Импортируем готовую функцию из tireApi
   type Tire,
 } from "../../modules/tireApi";
 import { TIRES_MOCK } from "../../modules/mock";
@@ -21,24 +21,7 @@ import { setSearchQuery, clearSearchQuery } from "../../store/slices/tiresFilter
 
 import "./TiresPage.css";
 
-// ✅ Хелпер для резолва путей к изображениям (синхронизирован с resolveMediaUrl)
-function resolveThumb(key: string): string {
-  if (!key) return fallbackImageUrl();
-  
-  // ✅ Разрешаем все схемы, как в resolveMediaUrl (для поддержки моков)
-  if (
-    key.startsWith("http://") ||
-    key.startsWith("https://") ||
-    key.startsWith("/") ||
-    key.startsWith("blob:") ||
-    key.startsWith("data:")  // ✅ Ключевое: data: URLs для моков
-  ) {
-    return key;
-  }
-  
-  // Для остальных случаев — строим URL через MinIO
-  return objectUrlFromKey(key);
-}
+// ✅ resolveThumb больше не нужен — используем resolveMediaUrl напрямую
 
 export default function TiresPage() {
   const dispatch = useAppDispatch();
@@ -286,7 +269,8 @@ export default function TiresPage() {
                   {visibleClipRows.map((item) => {
                     const t = tireById.get(item.id);
                     if (!t) return null;
-                    const thumb = resolveThumb(t.photo || "");
+                    // ✅ Используем resolveMediaUrl — та же логика, что в TireDetailPage
+                    const thumb = resolveMediaUrl(t.photo || "");
                     return (
                       <li key={item.id}>
                         <Link to={`/tire/${item.id}`} className="tire-row clip-result-row">
