@@ -12,6 +12,8 @@ import { ZEROTIER_PC_HOST, API_ORIGIN_PC } from './src/config/backendHost'
 const isProdBuild = process.env.NODE_ENV === 'production'
 const base = !isProdBuild ? '/' : `/${GITHUB_PAGES_REPO_SLUG}/`
 
+
+
 export default defineConfig({
   base,
   plugins: [
