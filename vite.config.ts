@@ -1,75 +1,89 @@
 // vite.config.ts
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// ✅ Импортируем конфиги
-import { GITHUB_PAGES_REPO_SLUG } from './src/config/githubPages'
-import { ZEROTIER_PC_HOST, API_ORIGIN_PC } from './src/config/backendHost'
+// ✅ Импортируем ТОЛЬКО то, что реально используется:
+import { API_PORT } from './src/config/backendHost'
 
-// 🔹 Вычисляем base: в проде — с подпапкой репо, в деве — корень
-const isProdBuild = process.env.NODE_ENV === 'production'
-const base = !isProdBuild ? '/' : `/${GITHUB_PAGES_REPO_SLUG}/`
+// Функция для определения хоста прокси
+function resolveProxyHostSync(env: Record<string, string>): string {
+  const fromEnv = env.VITE_PROXY_BACKEND_HOST?.trim()
+  if (fromEnv) return fromEnv
+  return '127.0.0.1'
+}
 
-export default defineConfig({
-  base,
-  plugins: [
-    react(),
-    // ✅ mkcert с явным списком хостов (включая ZeroTier IP)
-    mkcert({
-      hosts: ['localhost', '127.0.0.1', ZEROTIER_PC_HOST],
-    }),
-    // ✅ PWA (требование ЛР)
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['pwa-192.png', 'pwa-512.png', 'vite.svg'],
-      manifest: {
-        name: 'Tire Pressure Calculator',
-        short_name: 'TireCalc',
-        description: 'Калькулятор давления в шинах и каталог услуг',
-        start_url: base,
-        scope: base,
-        display: 'standalone',
-        background_color: '#f6f7f7',
-        theme_color: '#0d6efd',
-        orientation: 'any',
-        lang: 'ru',
-        icons: [
-          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-        ],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  
+  // Base: для Tauri/build — './', для dev — '/'
+  const base =  '/'
+  
+  // Хост для прокси в dev-режиме
+  const proxyHost = resolveProxyHostSync(env)
+  const backendApiOrigin = `http://${proxyHost}:${API_PORT}`
+
+  return {
+    base,
+    envPrefix: ['VITE_', 'TAURI_'],
+    clearScreen: false,
+    
+    plugins: [
+      react(),
+      // ✅ mkcert полностью удалён — чистый HTTP для Tauri
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['pwa-192.png', 'pwa-512.png', 'vite.svg'],
+        manifest: {
+          name: 'Tire Pressure Calculator',
+          short_name: 'TireCalc',
+          description: 'Калькулятор давления в шинах и каталог услуг',
+          start_url: base,
+          scope: base,
+          display: 'standalone',
+          background_color: '#f6f7f7',
+          theme_color: '#0d6efd',
+          orientation: 'any',
+          lang: 'ru',
+          icons: [
+            { src: 'pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          ],
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp4,webm,wasm}'],
+          maximumFileSizeToCacheInBytes: 35 * 1024 * 1024,
+        },
+        devOptions: { enabled: mode === 'development' },
+      }),
+    ],
+    
+    server: {
+      host: true,
+      port: 3000,
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: backendApiOrigin,
+          changeOrigin: true,
+          secure: false,
+        },
       },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp4,webm,wasm}'],
-        maximumFileSizeToCacheInBytes: 35 * 1024 * 1024,
-      },
-      devOptions: { enabled: true },
-    }),
-  ],
-  server: {
-    host: true,        // ✅ Слушает все интерфейсы (включая ZeroTier)
-    port: 3000,
-    strictPort: true,
-    // ✅ Прокси: /api → бэкенд по ZeroTier IP
-    proxy: {
-      '/api': {
-        target: API_ORIGIN_PC,  // ← http://10.147.20.84:8080
-        changeOrigin: true,
-        secure: false,
+      watch: {
+        ignored: ['**/src-tauri/**'],
       },
     },
-  },
-  // ✅ Прокси для preview-режима (тест продакшен-сборки локально)
-  preview: {
-    host: true,
-    port: 4173,
-    proxy: {
-      '/api': {
-        target: API_ORIGIN_PC,
-        changeOrigin: true,
-        secure: false,
+    
+    preview: {
+      host: true,
+      port: 4173,
+      proxy: {
+        '/api': {
+          target: backendApiOrigin,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
-  },
+  }
 })

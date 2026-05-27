@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "tire-pressure-calculator",
-  "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "productName": "TirePressureCalculator",
+  "version": "1.0.0",
+  "identifier": "com.tirepressure.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
@@ -14,33 +14,32 @@
     "windows": [
       {
         "title": "Tire Pressure Calculator",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "devtools": true
       }
     ],
     "security": {
-      "csp": "default-src 'self' http://localhost:3000; img-src 'self' http://localhost:9000 data: blob:; connect-src 'self' http://localhost:8080; script-src 'self'; style-src 'self' 'unsafe-inline';"
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: asset: tauri: http://localhost:3000 http://127.0.0.1:3000 http://localhost:4173 http://127.0.0.1:4173; connect-src 'self' asset: tauri: http://localhost:3000 http://127.0.0.1:3000 http://localhost:8080 http://127.0.0.1:8080 ws://localhost:3000 ws://127.0.0.1:3000; img-src 'self' data: blob: asset: tauri: http://localhost:3000 http://127.0.0.1:3000 http://localhost:9090 http://127.0.0.1:9090; media-src 'self' blob: asset: tauri: http://localhost:3000 http://127.0.0.1:3000 http://localhost:9090 http://127.0.0.1:9090; script-src 'self' 'unsafe-eval' 'unsafe-inline' asset: tauri: http://localhost:3000 http://127.0.0.1:3000; worker-src 'self' blob: asset:; style-src 'self' 'unsafe-inline' asset: tauri: http://localhost:3000 http://127.0.0.1:3000;"
     }
   },
   "plugins": {
     "http": {
-      "enabled": true
+      "enabled": true,
+      "scope": ["http://localhost:8080/*", "http://127.0.0.1:8080/*", "http://localhost:3000/*", "http://localhost:9090/*"]
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "android": {
-      "debugApplicationIdSuffix": ".debug"
-    }
+    ]
   }
 }

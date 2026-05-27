@@ -1,11 +1,16 @@
 // src/api/index.ts
 import { Api } from "./Api";
+let baseURL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8080/api";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api";
-console.log('[API] baseURL:', baseURL);  // В консоли браузера будет видно, куда стучится приложение
+// 🛑 Принудительно приводим к http:// (на случай, если Vite подставил https)
+if (!baseURL.startsWith("http://") && !baseURL.startsWith("/")) {
+  baseURL = "http://" + baseURL.replace(/^https:\/\//, "");
+}
+
+console.log('[TAURI-API] 🔍 baseURL:', baseURL);
+console.log('[TAURI-API] 🔍 isProd:', import.meta.env.PROD);
 
 export const api = new Api({ baseURL });
-
 api.instance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
