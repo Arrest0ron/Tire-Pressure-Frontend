@@ -414,16 +414,7 @@ export default function TirePressurePage() {
           </table>
         </div>
 
-        {/* === Кнопка навигации (всегда) === */}
-        <div className="tire-pressure-page__actions">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => navigate(ROUTES.TIRES)}
-          >
-            ← На главную
-          </Button>
-        </div>
+        
 
       </div>
     </div>
