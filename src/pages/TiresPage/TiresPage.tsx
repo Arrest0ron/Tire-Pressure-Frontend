@@ -21,17 +21,22 @@ import { setSearchQuery, clearSearchQuery } from "../../store/slices/tiresFilter
 
 import "./TiresPage.css";
 
-// ✅ Хелпер для резолва путей к изображениям (как в примере)
+// ✅ Хелпер для резолва путей к изображениям (синхронизирован с resolveMediaUrl)
 function resolveThumb(key: string): string {
   if (!key) return fallbackImageUrl();
+  
+  // ✅ Разрешаем все схемы, как в resolveMediaUrl (для поддержки моков)
   if (
     key.startsWith("http://") ||
     key.startsWith("https://") ||
     key.startsWith("/") ||
-    key.startsWith("blob:")
+    key.startsWith("blob:") ||
+    key.startsWith("data:")  // ✅ Ключевое: data: URLs для моков
   ) {
     return key;
   }
+  
+  // Для остальных случаев — строим URL через MinIO
   return objectUrlFromKey(key);
 }
 
@@ -184,19 +189,12 @@ export default function TiresPage() {
     ? clipProcessed.filter((item) => item.isVisible)
     : [];
 
-  // ✅ Опционально: сброс фильтра при уходе со страницы (раскомментируй, если нужно)
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(clearSearchQuery());
-  //   };
-  // }, [dispatch]);
-
   return (
     <div className="tires-page">
       {/* === Текстовый поиск === */}
       <Search
         query={searchTitle}
-        onQueryChange={(v) => dispatch(setSearchQuery(v))} // ✅ Dispatch в Redux
+        onQueryChange={(v) => dispatch(setSearchQuery(v))}
         onSearch={handleSearch}
       />
 
